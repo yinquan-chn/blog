@@ -57,18 +57,20 @@ public final class Optional<T> {
     }
 
     /**
-     * 构造方法。创建一个指定值对象的实例，此处只能传入一个non-null的值，如果传入null则会报错NollPointerException
+     * 构造方法。创建一个指定值对象的实例，此处只能传入一个non-null的值，如果传入null则会报错
+     * NollPointerException
      * 这里使用private将构造方法私有化，主要出于一下几个目的：
-     * 1、设计原则：单一职责，Optional作为一个值容器，其构造函数应该只有Optional类本身使用，不应给其他类使用
-     * 2、防止滥用：如果将Optional的构造方法公开，那么任何类都可以实例化Optional。
+     * 1、设计原则：单一职责，Optional作为一个值容器，其构造函数应该只有Optional类本身使用，不应给其他类使用;
+     * 2、防止滥用：如果将Optional的构造方法公开，那么任何类都可以实例化Optional，这可能导致不必要的滥用。将构造函数设置成私有，确保Optional只能通过静态工厂方法（Optional.empty()、Optional.of()）进行实例化，能更好的使用Optional;
+     * 3、简化API：限制构造函数的访问，可以简化API使其更易于理解。外部代码只需要知道如何使用静态工厂方法，而不是直接使用构造函数实例化.
      */
     private Optional(T value) {
         this.value = Objects.requireNonNull(value);
     }
 
     /**
-     * Returns an {@code Optional} with the specified present non-null value.
-     *
+     * 静态工厂方法，返回一个包装non-null值的Optional实例
+     * 
      * @param <T> the class of the value
      * @param value the value to be present, which must be non-null
      * @return an {@code Optional} with the value present
@@ -79,8 +81,7 @@ public final class Optional<T> {
     }
 
     /**
-     * Returns an {@code Optional} describing the specified value, if non-null,
-     * otherwise returns an empty {@code Optional}.
+     * 静态工厂方法，返回一个封装值的Optional。传入的值可以为空，为空则返回empty
      *
      * @param <T> the class of the value
      * @param value the possibly-null value to describe
