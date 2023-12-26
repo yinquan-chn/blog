@@ -81,7 +81,8 @@ public final class Optional<T> {
     }
 
     /**
-     * 静态工厂方法，返回一个封装值的Optional。传入的值可以为空，为空则返回empty
+     * 静态工厂方法，返回一个封装值的Optional。传入的值可以为空，为空则返回empty;
+     * 当你传入的参数可能为null时，就使用这个构造方法
      *
      * @param <T> the class of the value
      * @param value the possibly-null value to describe
@@ -93,8 +94,9 @@ public final class Optional<T> {
     }
 
     /**
-     * If a value is present in this {@code Optional}, returns the value,
-     * otherwise throws {@code NoSuchElementException}.
+     * 如果值存在，则返回该值。否则抛出NoSuchElementException异常；
+     * 所以get()方法通常和isPresent()方法一起使用，但是这不是一个Optional推荐的使用方法，
+     * 因为这样和直接使用if(value != null) 判断差不多
      *
      * @return the non-null value held by this {@code Optional}
      * @throws NoSuchElementException if there is no value present
@@ -110,6 +112,7 @@ public final class Optional<T> {
 
     /**
      * Return {@code true} if there is a value present, otherwise {@code false}.
+     * 判断值是否为null的方法，如果值不为null，则返回true，否则返回false
      *
      * @return {@code true} if there is a value present, otherwise {@code false}
      */
@@ -120,6 +123,12 @@ public final class Optional<T> {
     /**
      * If a value is present, invoke the specified consumer with the value,
      * otherwise do nothing.
+     * 如果值不为null，则通过传入的Consumer对值进行处理。否则将不执行任何事情
+     * Optional.ofNullable(obj).ifPresent(() -> {
+     *     // Do SomeThing
+     * })
+     * 
+     * Consumer是Java8的新内容：lambda表达式
      *
      * @param consumer block to be executed if a value is present
      * @throws NullPointerException if value is present and {@code consumer} is
@@ -134,6 +143,10 @@ public final class Optional<T> {
      * If a value is present, and the value matches the given predicate,
      * return an {@code Optional} describing the value, otherwise return an
      * empty {@code Optional}.
+     * 这里的filter和stream中的filter差不多。如果值不为null，并且使用Predicate对值匹配成功，则返回该值
+     * 否则返回Optional.empty();
+     * 
+     * Predicate是Java8的新内容：lambda表达式，通常用于测试或匹配某个条件
      *
      * @param predicate a predicate to apply to the value, if present
      * @return an {@code Optional} describing the value of this {@code Optional}
@@ -142,10 +155,13 @@ public final class Optional<T> {
      * @throws NullPointerException if the predicate is null
      */
     public Optional<T> filter(Predicate<? super T> predicate) {
+        // 判断传入的Predicate是否为null
         Objects.requireNonNull(predicate);
         if (!isPresent())
+        // 如果value == null，则返回自身相当于返回一个empty();
             return this;
         else
+        // value != null，使用Predicate进行匹配，成功则返回自身，不成功返回empty
             return predicate.test(value) ? this : empty();
     }
 
@@ -153,7 +169,14 @@ public final class Optional<T> {
      * If a value is present, apply the provided mapping function to it,
      * and if the result is non-null, return an {@code Optional} describing the
      * result.  Otherwise return an empty {@code Optional}.
-     *
+     * 加工方法，如果值不为null，并且使用Function对值进行加工，并将加工后的值封装到Optional中
+     * 否则返回Optional.empty();
+     * 这个方法支持对值的后处理，即不用显示地检查值是否为null；简单来说就是值存在才进行处理，
+     * 值不存在直接返回empty；使用者无需再手动的判断（可以参考下面官方给出的例子）。
+     * 要注意的是，这里返回的是一个Optional类型，所以当你定义Functions时如果返回的是一个Optional类型，会被封装两次，如果不想被再度封装使用下一个方法Optional.flatMap();
+     * 
+     * 
+     * 
      * @apiNote This method supports post-processing on optional values, without
      * the need to explicitly check for a return status.  For example, the
      * following code traverses a stream of file names, selects one that has
@@ -194,6 +217,9 @@ public final class Optional<T> {
      * but the provided mapper is one whose result is already an {@code Optional},
      * and if invoked, {@code flatMap} does not wrap it with an additional
      * {@code Optional}.
+     * 
+     * 这个方法和map()方法类似，区别就是这个方法Funciton已经返回了一个Optional对象
+     * 所以不会再将值封装到一个新的Optional中了
      *
      * @param <U> The type parameter to the {@code Optional} returned by
      * @param mapper a mapping function to apply to the value, if present
