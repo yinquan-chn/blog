@@ -241,6 +241,9 @@ public final class Optional<T> {
 
     /**
      * Return the value if present, otherwise return {@code other}.
+     * value != null，则返回value，否则返回other
+     * 这个方法和orElseGet区别是：这个不管是不是null都会获取other；
+     * 因此如果获取other的方法计算量较大，最好使用orElseGet()
      *
      * @param other the value to be returned if there is no value present, may
      * be null
@@ -253,6 +256,7 @@ public final class Optional<T> {
     /**
      * Return the value if present, otherwise invoke {@code other} and return
      * the result of that invocation.
+     * value != null，则返回value，否则返回other函数获取该方法的结果
      *
      * @param other a {@code Supplier} whose result is returned if no value
      * is present
@@ -267,6 +271,7 @@ public final class Optional<T> {
     /**
      * Return the contained value, if present, otherwise throw an exception
      * to be created by the provided supplier.
+     * value != null，则返回value，否则执行exceptionSupplier函数，生成并抛出一个异常
      *
      * @apiNote A method reference to the exception constructor with an empty
      * argument list can be used as the supplier. For example,
