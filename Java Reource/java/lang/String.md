@@ -32,22 +32,37 @@
  * <p>
  * 
  * The class {@code String} includes methods 
+ * String类包含这些基本方法
  * for examining individual characters of the sequence, 
+ * 1、检查序列中的单个字符：例如,charAt(int index) 方法可以返回指定索引位置的字符
+ * 
  * for comparing strings, 
+ * 2、比较字符串：例如，equals(Object anObject)方法，比较两个字符串是否相同
+ * 
  * for searching strings, 
+ * 3、搜索字符串：例如，indexOf(int ch)和indexOf(String substring)方法可以在字符串中查找特定的字符或者子字符串位置
+ * 
  * for extracting substrings, 
+ * 4、提取子字符串：例如，substring(int beginIndex)和substring(int beginIndex, int endIndex)方法可以从原始字符串中提取子字符串。
+ * 
  * and for creating a copy of a string with all characters translated to uppercase or to lowercase. 
+ * 5、将字符串中的所有字符转换为大写或小写：例如，toUpperCase()和toLowerCase()方法可以将字符串中的所有字符转换为大写或小写。
+ * 
  * Case mapping is based on the Unicode Standard version
  * specified by the {@link java.lang.Character Character} class.
+ * 其中，字符的大小写转换是基于Unicode标准进行的，具体的版本由Character类指定。
+ * 
  * <p>
- * The Java language provides special support for the string
- * concatenation operator (&nbsp;+&nbsp;), and for conversion of
- * other objects to strings. String concatenation is implemented
- * through the {@code StringBuilder}(or {@code StringBuffer})
- * class and its {@code append} method.
- * String conversions are implemented through the method
- * {@code toString}, defined by {@code Object} and
- * inherited by all classes in Java. For additional information on
+ * The Java language provides special support for the string concatenation operator (&nbsp;+&nbsp;), and for conversion of other objects to strings. 
+ * Java语言支持使用（ + ）进行符号拼接，上面"&nbsp;"在html中展示为空格
+ * 
+ * String concatenation is implemented through the {@code StringBuilder}(or {@code StringBuffer}) class and its {@code append} method.
+ * String 支持使用 StringBuilder和StringBuffer两个Class的append()方法进行拼接；更推荐使用这两个类进行凭借，特别是使用循环处理String的时候
+ * 
+ * String conversions are implemented through the method {@code toString}, defined by {@code Object} and inherited by all classes in Java. 
+ * 转换String可以通过toString方法，这个方法定义在Object中并且被Java所有的类继承
+ * 
+ * For additional information on
  * string concatenation and conversion, see Gosling, Joy, and Steele,
  * <i>The Java Language Specification</i>.
  *
