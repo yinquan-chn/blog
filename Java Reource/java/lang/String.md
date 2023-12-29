@@ -62,24 +62,27 @@
  * String conversions are implemented through the method {@code toString}, defined by {@code Object} and inherited by all classes in Java. 
  * 转换String可以通过toString方法，这个方法定义在Object中并且被Java所有的类继承
  * 
- * For additional information on
- * string concatenation and conversion, see Gosling, Joy, and Steele,
- * <i>The Java Language Specification</i>.
- *
- * <p> Unless otherwise noted, passing a <tt>null</tt> argument to a constructor
- * or method in this class will cause a {@link NullPointerException} to be
+ * For additional information on string concatenation and conversion, see Gosling, Joy, and Steele, The Java Language Specification.
+ * 更多的信息可以参考《The Java Language Specification》
+ * 
+ * Unless otherwise noted, passing a <tt>null</tt> argument to a constructor or method in this class will cause a {@link NullPointerException} to be
  * thrown.
+ * 除非另外指出，如果使用null来调用这个类的方法，将会抛出NullPointerException异常
  *
- * <p>A {@code String} represents a string in the UTF-16 format
- * in which <em>supplementary characters</em> are represented by <em>surrogate
- * pairs</em> (see the section <a href="Character.html#unicode">Unicode
- * Character Representations</a> in the {@code Character} class for
- * more information).
- * Index values refer to {@code char} code units, so a supplementary
- * character uses two positions in a {@code String}.
- * <p>The {@code String} class provides methods for dealing with
- * Unicode code points (i.e., characters), in addition to those for
- * dealing with Unicode code units (i.e., {@code char} values).
+ * A {@code String} represents a string in the UTF-16 format in which 
+ * <em>supplementary characters</em> are represented by <em>surrogate pairs</em> 
+ * Java中String是使用UTF-16编码。关于编码的问题，后续在编码相关文字进行详细的探讨，这里要说明，Java使用UTF-16是一个历史遗留，虽然现在UTF-8更流行且更为兼容
+ * 
+ * (see the section <a href="Character.html#unicode">Unicode Character Representations</a> in the {@code Character} class for more information).
+ * 可以通过查看Character类中关于Unicode字符表示的章节，以获取更多信息
+ * 当String使用补充字符的时候，charAt(int index)会获取道什么值呢？索引0会返回补充字符的高代理（high surrogate），而索引1会返回补充字符的低代理（low surrogate）
+ * 
+ * Index values refer to {@code char} code units, so a supplementary character uses two positions in a {@code String}.
+ * index 索引只想的是char的代码单元，所以使用补充字符的时候，由于使用的是两个代码字符表示，所以他会占用两个索引位置
+ * 
+ * 
+ * The {@code String} class provides methods for dealing with Unicode code points (i.e., characters), 
+ * in addition to those for dealing with Unicode code units (i.e., {@code char} values).
  *
  * @author  Lee Boynton
  * @author  Arthur van Hoff
