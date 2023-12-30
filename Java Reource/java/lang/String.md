@@ -83,7 +83,9 @@
  * 
  * The {@code String} class provides methods for dealing with Unicode code points (i.e., characters), 
  * in addition to those for dealing with Unicode code units (i.e., {@code char} values).
- *
+ * Java中的String类除了提供处理Unicode代码单元（即char值）的方法外，还提供了处理Unicode码点（即字符）的方法
+ * 例如上文所说的使用charAt(0)会返回补充字符的高代理（high surrogate），而使用codePointAt(0)会返回完整的码点
+ * 
  * @author  Lee Boynton
  * @author  Arthur van Hoff
  * @author  Martin Buchholz
@@ -97,21 +99,34 @@
 
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
-    /** The value is used for character storage. */
+    /** 
+     * The value is used for character storage. 
+     * 用于存储字符串的value，按照推荐的数组定义风格可能会写成：
+     * char[] value;
+     * 
+     */
     private final char value[];
 
-    /** Cache the hash code for the string */
+    /** 
+     * Cache the hash code for the string 
+     * 缓存String hash code，调用hashCode()方法时，如果hash的值不是0，则直接返回缓存值
+     */
     private int hash; // Default to 0
 
-    /** use serialVersionUID from JDK 1.0.2 for interoperability */
+    /** 
+     * use serialVersionUID from JDK 1.0.2 for interoperability
+     */
     private static final long serialVersionUID = -6849794470754667710L;
 
     /**
      * Class String is special cased within the Serialization Stream Protocol.
+     * 类字符串在序列化流协议中有特殊情况。
      *
      * A String instance is written into an ObjectOutputStream according to
      * <a href="{@docRoot}/../platform/serialization/spec/output.html">
      * Object Serialization Specification, Section 6.2, "Stream Elements"</a>
+     * 
+     * 这段代码定义了一个空的ObjectStreamField数组，意味着它不指定任何自定义的序列化字段。这意味着所有的默认字段都会被序列化。
      */
     private static final ObjectStreamField[] serialPersistentFields =
         new ObjectStreamField[0];
@@ -120,6 +135,8 @@ public final class String
      * Initializes a newly created {@code String} object so that it represents
      * an empty character sequence.  Note that use of this constructor is
      * unnecessary since Strings are immutable.
+     * 
+     * 初始化一个""的新String对象，这个方法是不推荐使用的，因为String是不可变的
      */
     public String() {
         this.value = "".value;
@@ -131,6 +148,7 @@ public final class String
      * newly created string is a copy of the argument string. Unless an
      * explicit copy of {@code original} is needed, use of this constructor is
      * unnecessary since Strings are immutable.
+     * 复制一个新的String对象，这个方法也是不推荐使用的，因为String是不可变的
      *
      * @param  original
      *         A {@code String}
