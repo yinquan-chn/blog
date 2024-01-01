@@ -90,10 +90,10 @@
  * @author  Arthur van Hoff
  * @author  Martin Buchholz
  * @author  Ulf Zibis
- * @see     java.lang.Object#toString()
- * @see     java.lang.StringBuffer
- * @see     java.lang.StringBuilder
- * @see     java.nio.charset.Charset
+ * @see     java.lang.Object#toString() 所有的类都可以通过toString()方法转换为String，具体要看如何实现Object的toString()
+ * @see     java.lang.StringBuffer 处理可变长度String的，一般用于循环内处理String，线程安全
+ * @see     java.lang.StringBuilder 处理可变长度String的，一般用于循环内处理String，线程不安全
+ * @see     java.nio.charset.Charset Java的核心类，表示字符集
  * @since   JDK1.0
  */
 
@@ -163,11 +163,14 @@ public final class String
      * characters currently contained in the character array argument. The
      * contents of the character array are copied; subsequent modification of
      * the character array does not affect the newly created string.
-     *
+     * 创建一个新的String对象，该对象表示字符数组中的字符序列
+     * 并且这个新创建的String对象与字符数组是独立的，修改字符数组不会影响这个String对象。
+     * 
      * @param  value
      *         The initial value of the string
      */
     public String(char value[]) {
+        // 这段代码可以看出，复制了一个新的数组，所有后面对字符数组的修改不会影响新创建的String对象。
         this.value = Arrays.copyOf(value, value.length);
     }
 
@@ -178,7 +181,10 @@ public final class String
      * argument specifies the length of the subarray. The contents of the
      * subarray are copied; subsequent modification of the character array does
      * not affect the newly created string.
-     *
+     * 创建一个新的String对象，该对象表示字符数组中的一段字符序列
+     * 并且这个新创建的String对象与字符数组是独立的，修改字符数组不会影响这个String对象。
+     * 
+     * 
      * @param  value
      *         Array that is the source of characters
      *
@@ -206,6 +212,16 @@ public final class String
             }
         }
         // Note: offset or count might be near -1>>>1.
+        /**
+         * 这里-1>>>1.是值Integer.MAX_VALUE，这一段注释的意思是，下面的if在逻辑上有两种写法
+         * 1、offset + count > value.length
+         * 2、offset > value.length - count
+         * 第一种很直观，一眼就看出偏移量不能大于值的长度，但是使用+可能导致int的溢出
+         * 使用 value.length - count能避免int的溢出
+         * 同样的，取两个数之间的中间值
+         * 方法一：mid = (l + r) / 2 : 容易溢出
+         * 方法二：mid = l + (r - l) / 2
+         */
         if (offset > value.length - count) {
             throw new StringIndexOutOfBoundsException(offset + count);
         }
