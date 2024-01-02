@@ -236,6 +236,7 @@ public final class String
      * length of the subarray.  The contents of the subarray are converted to
      * {@code char}s; subsequent modification of the {@code int} array does not
      * affect the newly created string.
+     * 通过Unicode码点数组生成String，不是很常用
      *
      * @param  codePoints
      *         Array that is the source of Unicode code points
@@ -277,17 +278,21 @@ public final class String
         final int end = offset + count;
 
         // Pass 1: Compute precise size of char[]
+        // 1.计算字符长度，通常一个码点对应一个字符,但是扩展外的是由high surrogate和low surrogat组成的，所以要增加
         int n = count;
         for (int i = offset; i < end; i++) {
             int c = codePoints[i];
             if (Character.isBmpCodePoint(c))
                 continue;
             else if (Character.isValidCodePoint(c))
+                // 扩展外的合法字符
                 n++;
+            // 存在不合法的字符，直接报错
             else throw new IllegalArgumentException(Integer.toString(c));
         }
 
         // Pass 2: Allocate and fill in char[]
+        // 2.分配并填充一个数组
         final char[] v = new char[n];
 
         for (int i = offset, j = 0; i < end; i++, j++) {
@@ -295,6 +300,7 @@ public final class String
             if (Character.isBmpCodePoint(c))
                 v[j] = (char)c;
             else
+                // 处理扩展外字符
                 Character.toSurrogates(c, v, j++);
         }
 
@@ -339,6 +345,7 @@ public final class String
      * @see  #String(byte[], java.lang.String)
      * @see  #String(byte[], java.nio.charset.Charset)
      * @see  #String(byte[])
+     * 已废弃的方法，主要是因为没有明确字符编码，可能导致不同的Java环境得到不同的结果
      */
     @Deprecated
     public String(byte ascii[], int hibyte, int offset, int count) {
