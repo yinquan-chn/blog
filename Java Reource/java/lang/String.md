@@ -394,6 +394,7 @@ public final class String
      * @see  #String(byte[], java.lang.String)
      * @see  #String(byte[], java.nio.charset.Charset)
      * @see  #String(byte[])
+     * 已废弃的方法，主要是因为没有明确字符编码，可能导致不同的Java环境得到不同的结果
      */
     @Deprecated
     public String(byte ascii[], int hibyte) {
@@ -418,22 +419,26 @@ public final class String
      * bytes using the specified charset.  The length of the new {@code String}
      * is a function of the charset, and hence may not be equal to the length
      * of the subarray.
+     * 使用指定的一个字符集将byte数组转换为String
+     * 新创建的String的长度可能会因为字符集的不同而与原始字节子数组的长度不同。例如，在使用UTF-8编码时，一个字符可能由多个字节表示。
      *
      * <p> The behavior of this constructor when the given bytes are not valid
      * in the given charset is unspecified.  The {@link
      * java.nio.charset.CharsetDecoder} class should be used when more control
      * over the decoding process is required.
+     * 如果给定的字节在指定的字符集中无效，这个构造方法的行为是不确定的。这意味着它可能不会抛出异常，但也可能产生不可预测的结果
+     * 如果需要更多的控制权来处理解码过程，应该使用java.nio.charset.CharsetDecoder类。这个类提供了更细致、更强大的字符解码功能。
      *
-     * @param  bytes
+     * @param  bytes 需要解码为字符的字节
      *         The bytes to be decoded into characters
      *
-     * @param  offset
+     * @param  offset 要解码的第一个字节索引
      *         The index of the first byte to decode
      *
-     * @param  length
+     * @param  length 要解码的字节数
      *         The number of bytes to decode
 
-     * @param  charsetName
+     * @param  charsetName 使用的字符集
      *         The name of a supported {@linkplain java.nio.charset.Charset
      *         charset}
      *
@@ -448,9 +453,14 @@ public final class String
      */
     public String(byte bytes[], int offset, int length, String charsetName)
             throws UnsupportedEncodingException {
+        // 1.如果字符集为null，则抛出异常
         if (charsetName == null)
             throw new NullPointerException("charsetName");
+
+        // 2.检查字节数组、偏移量和长度是否有效，如果无效则抛出异常
+
         checkBounds(bytes, offset, length);
+        // 3.调用了StringCoding.decode方法，使用指定的字符集名称、字节数组、偏移量和长度来解码字节，并将结果存储在实例变量value中
         this.value = StringCoding.decode(charsetName, bytes, offset, length);
     }
 
@@ -459,22 +469,26 @@ public final class String
      * bytes using the specified {@linkplain java.nio.charset.Charset charset}.
      * The length of the new {@code String} is a function of the charset, and
      * hence may not be equal to the length of the subarray.
+     * 使用指定的一个字符集将byte数组转换为String
+     * 新创建的String的长度可能会因为字符集的不同而与原始字节子数组的长度不同。例如，在使用UTF-8编码时，一个字符可能由多个字节表示。
      *
      * <p> This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement string.  The {@link
      * java.nio.charset.CharsetDecoder} class should be used when more control
      * over the decoding process is required.
+     * 当遇到格式不正确的输入或无法映射的字符序列时，该方法会使用该字符集的默认替换字符串来代替它们。
+     * 如果需要更精细地控制解码过程，应该使用java.nio.charset.CharsetDecoder类。
      *
-     * @param  bytes
+     * @param  bytes 需要解码为字符的字节
      *         The bytes to be decoded into characters
      *
-     * @param  offset
+     * @param  offset 要解码的第一个字节索引
      *         The index of the first byte to decode
      *
-     * @param  length
+     * @param  length 要解码的字节数
      *         The number of bytes to decode
      *
-     * @param  charset
+     * @param  charset 使用的字符集
      *         The {@linkplain java.nio.charset.Charset charset} to be used to
      *         decode the {@code bytes}
      *
@@ -485,9 +499,14 @@ public final class String
      * @since  1.6
      */
     public String(byte bytes[], int offset, int length, Charset charset) {
+        // 1.如果传入的字符集对象是null，则抛出一个NullPointerException异常，异常信息为"charset"
         if (charset == null)
             throw new NullPointerException("charset");
+
+        // 2.检查字节数组、偏移量和长度是否有效，如果无效则抛出异常
         checkBounds(bytes, offset, length);
+
+        // 3.调用了StringCoding.decode方法，使用指定的字符集名称、字节数组、偏移量和长度来解码字节，并将结果存储在实例变量value中
         this.value =  StringCoding.decode(charset, bytes, offset, length);
     }
 
@@ -496,11 +515,15 @@ public final class String
      * using the specified {@linkplain java.nio.charset.Charset charset}.  The
      * length of the new {@code String} is a function of the charset, and hence
      * may not be equal to the length of the byte array.
+     * 使用指定的一个字符集将byte数组转换为String
+     * 新创建的String的长度可能会因为字符集的不同而与原始字节子数组的长度不同。例如，在使用UTF-8编码时，一个字符可能由多个字节表示。
      *
      * <p> The behavior of this constructor when the given bytes are not valid
      * in the given charset is unspecified.  The {@link
      * java.nio.charset.CharsetDecoder} class should be used when more control
      * over the decoding process is required.
+     * 如果给定的字节在指定的字符集中无效，这个构造方法的行为是不确定的。这意味着它可能不会抛出异常，但也可能产生不可预测的结果
+     * 如果需要更多的控制权来处理解码过程，应该使用java.nio.charset.CharsetDecoder类。这个类提供了更细致、更强大的字符解码功能。
      *
      * @param  bytes
      *         The bytes to be decoded into characters
@@ -524,11 +547,15 @@ public final class String
      * bytes using the specified {@linkplain java.nio.charset.Charset charset}.
      * The length of the new {@code String} is a function of the charset, and
      * hence may not be equal to the length of the byte array.
+     * 使用指定的一个字符集将byte数组转换为String
+     * 新创建的String的长度可能会因为字符集的不同而与原始字节子数组的长度不同。例如，在使用UTF-8编码时，一个字符可能由多个字节表示。
      *
      * <p> This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement string.  The {@link
      * java.nio.charset.CharsetDecoder} class should be used when more control
      * over the decoding process is required.
+     * 当遇到格式不正确的输入或无法映射的字符序列时，该方法会使用该字符集的默认替换字符串来代替它们。
+     * 如果需要更精细地控制解码过程，应该使用java.nio.charset.CharsetDecoder类。
      *
      * @param  bytes
      *         The bytes to be decoded into characters
@@ -548,6 +575,8 @@ public final class String
      * bytes using the platform's default charset.  The length of the new
      * {@code String} is a function of the charset, and hence may not be equal
      * to the length of the subarray.
+     * 用于创建一个新的String对象，该对象表示由给定的字节数组下解码得到的字符序列。
+     * 解码过程中使用的是平台默认的字符集
      *
      * <p> The behavior of this constructor when the given bytes are not valid
      * in the default charset is unspecified.  The {@link
@@ -579,6 +608,8 @@ public final class String
      * using the platform's default charset.  The length of the new {@code
      * String} is a function of the charset, and hence may not be equal to the
      * length of the byte array.
+     * 用于创建一个新的String对象，该对象表示由给定的字节数组下解码得到的字符序列。
+     * 解码过程中使用的是平台默认的字符集
      *
      * <p> The behavior of this constructor when the given bytes are not valid
      * in the default charset is unspecified.  The {@link
@@ -599,12 +630,16 @@ public final class String
      * currently contained in the string buffer argument. The contents of the
      * string buffer are copied; subsequent modification of the string buffer
      * does not affect the newly created string.
+     * 从一个StringBuffer对象创建一个新的String对象
+     * 这个构造方法将StringBuffer的内容复制到一个新的字符串中，这样对StringBuffer的后续修改不会影响已创建的字符串。
      *
      * @param  buffer
      *         A {@code StringBuffer}
      */
     public String(StringBuffer buffer) {
+        // synchronized 保证buffer线程安全
         synchronized(buffer) {
+            // 使用Arrays.copyOf方法复制了StringBuffer的内容到一个新的字符数组
             this.value = Arrays.copyOf(buffer.getValue(), buffer.length());
         }
     }
@@ -614,10 +649,12 @@ public final class String
      * currently contained in the string builder argument. The contents of the
      * string builder are copied; subsequent modification of the string builder
      * does not affect the newly created string.
+     * 从一个StringBuilder对象创建一个新的String对象。这个构造方法将StringBuilder的内容复制到一个新的字符串中，这样对StringBuilder的后续修改不会影响已创建的字符串。
      *
      * <p> This constructor is provided to ease migration to {@code
      * StringBuilder}. Obtaining a string from a string builder via the {@code
      * toString} method is likely to run faster and is generally preferred.
+     * 在将StringBuilder转换为Stringd的方式中，使用toString()方法更推荐
      *
      * @param   builder
      *          A {@code StringBuilder}
@@ -625,6 +662,7 @@ public final class String
      * @since  1.5
      */
     public String(StringBuilder builder) {
+        // 使用Arrays.copyOf方法复制了StringBuilder的内容到一个新的字符数组
         this.value = Arrays.copyOf(builder.getValue(), builder.length());
     }
 
