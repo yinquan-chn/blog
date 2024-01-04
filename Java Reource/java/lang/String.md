@@ -666,11 +666,14 @@ public final class String
         this.value = Arrays.copyOf(builder.getValue(), builder.length());
     }
 
-    /*
+    /**
     * Package private constructor which shares value array for speed.
     * this constructor is always expected to be called with share==true.
     * a separate constructor is needed because we already have a public
     * String(char[]) constructor that makes a copy of the given char[].
+    * 包私有的方法，创建一个数组共享的String;
+    * 不常用，在目前不支持 unshared
+    * 
     */
     String(char[] value, boolean share) {
         // assert share : "unshared not supported";
@@ -679,9 +682,12 @@ public final class String
 
     /**
      * Returns the length of this string.
+     * 返回字符串的长度
+     * 
      * The length is equal to the number of <a href="Character.html#unicode">Unicode
      * code units</a> in the string.
-     *
+     * 字符串的长度等于其中的Unicode码位的数量
+     * 
      * @return  the length of the sequence of characters represented by this
      *          object.
      */
@@ -691,6 +697,8 @@ public final class String
 
     /**
      * Returns {@code true} if, and only if, {@link #length()} is {@code 0}.
+     * 当且仅当字符串长度为0的时候，返回ture。
+     * 一般来说这个方法不常用，更常用的时使用lang3包的StringUtils.isEmpty()方法
      *
      * @return {@code true} if {@link #length()} is {@code 0}, otherwise
      * {@code false}
@@ -702,15 +710,20 @@ public final class String
     }
 
     /**
-     * Returns the {@code char} value at the
-     * specified index. An index ranges from {@code 0} to
-     * {@code length() - 1}. The first {@code char} value of the sequence
+     * Returns the {@code char} value at the specified index.
+     * 返回索引位置的value
+     * 
+     * An index ranges from {@code 0} to {@code length() - 1}.
+     * 索引的范围从0到length()-1
+     * 
+     * The first {@code char} value of the sequence
      * is at index {@code 0}, the next at index {@code 1},
      * and so on, as for array indexing.
      *
-     * <p>If the {@code char} value specified by the index is a
+     * If the {@code char} value specified by the index is a
      * <a href="Character.html#unicode">surrogate</a>, the surrogate
      * value is returned.
+     * 如果索引位置是代理值，则会直接返回代理值
      *
      * @param      index   the index of the {@code char} value.
      * @return     the {@code char} value at the specified index of this string.
@@ -727,18 +740,21 @@ public final class String
     }
 
     /**
-     * Returns the character (Unicode code point) at the specified
-     * index. The index refers to {@code char} values
-     * (Unicode code units) and ranges from {@code 0} to
-     * {@link #length()}{@code  - 1}.
-     *
-     * <p> If the {@code char} value specified at the given index
-     * is in the high-surrogate range, the following index is less
-     * than the length of this {@code String}, and the
-     * {@code char} value at the following index is in the
-     * low-surrogate range, then the supplementary code point
-     * corresponding to this surrogate pair is returned. Otherwise,
-     * the {@code char} value at the given index is returned.
+     * Returns the character (Unicode code point) at the specified index. 
+     * 返回该索引位置上的字符以及其对应的Unicode代码点
+     * The index refers to {@code char} values (Unicode code units) and ranges from {@code 0} to {@link #length()}{@code  - 1}.
+     * 索引的范围从0到length()-1
+     * 
+     * If the {@code char} value specified at the given index is in the high-surrogate range, 
+     * 如果索引处的字符是是high-surrogate一部分
+     * the following index is less than the length of this {@code String}, 
+     * 下一个索引在字符串的范围内
+     * and the {@code char} value at the following index is in the low-surrogate range, 
+     * 并且下一个索引是low-surrogate范围
+     * then the supplementary code point corresponding to this surrogate pair is returned. 
+     * 如果满足条件，那么返回的是代理对对应的补充代码对
+     * Otherwise, the {@code char} value at the given index is returned.
+     * 如果给定的字符不是代理对的一部分，那么直接返回该索引出的字符
      *
      * @param      index the index to the {@code char} values
      * @return     the code point value of the character at the
@@ -756,19 +772,21 @@ public final class String
     }
 
     /**
-     * Returns the character (Unicode code point) before the specified
-     * index. The index refers to {@code char} values
-     * (Unicode code units) and ranges from {@code 1} to {@link
-     * CharSequence#length() length}.
+     * Returns the character (Unicode code point) before the specified index. 
+     * 返回该索引位置前的字符以及其对应的Unicode代码点
+     * 
+     * The index refers to {@code char} values (Unicode code units) and ranges from {@code 1} to {@link CharSequence#length() length}.
+     * 索引的范围是[1, length]
      *
-     * <p> If the {@code char} value at {@code (index - 1)}
-     * is in the low-surrogate range, {@code (index - 2)} is not
-     * negative, and the {@code char} value at {@code (index -
-     * 2)} is in the high-surrogate range, then the
-     * supplementary code point value of the surrogate pair is
-     * returned. If the {@code char} value at {@code index -
-     * 1} is an unpaired low-surrogate or a high-surrogate, the
-     * surrogate value is returned.
+     * <p> If the {@code char} value at {@code (index - 1)} is in the low-surrogate range, {@code (index - 2)} is not negative, 
+     * 如果index - 1位置 low-surrogate，且 index - 2 不是负数
+     * and the {@code char} value at {@code (index - 2)} is in the high-surrogate range, 
+     * index - 2的位置是 high -surrogate
+     * then the supplementary code point value of the surrogate pair is returned. 
+     * 如果满足条件，那么返回的是代理对对应的补充代码对
+     * 
+     * If the {@code char} value at {@code index - 1} is an unpaired low-surrogate or a high-surrogate, the surrogate value is returned.
+     * 如果index - 1 是一个不匹配的low-surrogate或者是一个 high-surrgate，则会返回代理字符本身
      *
      * @param     index the index following the code point that should be returned
      * @return    the Unicode code point value before the given index.
