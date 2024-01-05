@@ -804,13 +804,17 @@ public final class String
     }
 
     /**
-     * Returns the number of Unicode code points in the specified text
-     * range of this {@code String}. The text range begins at the
-     * specified {@code beginIndex} and extends to the
-     * {@code char} at index {@code endIndex - 1}. Thus the
-     * length (in {@code char}s) of the text range is
-     * {@code endIndex-beginIndex}. Unpaired surrogates within
-     * the text range count as one code point each.
+     * Returns the number of Unicode code points in the specified text range of this {@code String}.
+     * 返回Unicode代码点数量
+     * 
+     * The text range begins at the specified {@code beginIndex} and extends to the {@code char} at index {@code endIndex - 1}.
+     * 文本的范围是，从beginIndex开始，到endIndex - 1
+     * 
+     * Thus the length (in {@code char}s) of the text range is {@code endIndex-beginIndex}. 
+     * 长度是范围是 endIndex - beginIndex
+     * 
+     * Unpaired surrogates within the text range count as one code point each.
+     * 未匹配的代理，将会作为一个代码点
      *
      * @param beginIndex the index to the first {@code char} of
      * the text range.
@@ -832,12 +836,12 @@ public final class String
     }
 
     /**
-     * Returns the index within this {@code String} that is
-     * offset from the given {@code index} by
-     * {@code codePointOffset} code points. Unpaired surrogates
-     * within the text range given by {@code index} and
-     * {@code codePointOffset} count as one code point each.
-     *
+     * Returns the index within this {@code String} that is offset from the given {@code index} by {@code codePointOffset} code points. 
+     * 计算给定索引位置的字符在字符串中的偏移量
+     * 
+     * Unpaired surrogates within the text range given by {@code index} and {@code codePointOffset} count as one code point each.
+     * 在给定的文本范围内，未配对的代理字符（surrogates）每个都算作一个代码点
+     * 
      * @param index the index to be offset
      * @param codePointOffset the offset in code points
      * @return the index within this {@code String}
@@ -861,25 +865,36 @@ public final class String
 
     /**
      * Copy characters from this string into dst starting at dstBegin.
+     * 将此字符串中的字符从dstBegin开始复制到dst中。
+     * 
      * This method doesn't perform any range checking.
+     * 这个方法不会做范围检查
      */
     void getChars(char dst[], int dstBegin) {
         System.arraycopy(value, 0, dst, dstBegin, value.length);
     }
 
     /**
-     * Copies characters from this string into the destination character
-     * array.
-     * <p>
+     * Copies characters from this string into the destination character array.
+     * 将字符串中的一部分字符复制到目标字符数组中
+     * 
      * The first character to be copied is at index {@code srcBegin};
+     * 源字符串中要开始复制的索引位置
+     * 
      * the last character to be copied is at index {@code srcEnd-1}
-     * (thus the total number of characters to be copied is
-     * {@code srcEnd-srcBegin}). The characters are copied into the
-     * subarray of {@code dst} starting at index {@code dstBegin}
+     * 源字符串中要结束复制的索引位置（不包括该位置的字符
+     * 
+     * (thus the total number of characters to be copied is {@code srcEnd-srcBegin}). 
+     * 要复制的总数为srcEnd-srcBegin
+     * 
+     * The characters are copied into the subarray of {@code dst} starting at index {@code dstBegin}
+     * 目标数组中开始存储字符的索引位置
+     * 
      * and ending at index:
      * <blockquote><pre>
      *     dstBegin + (srcEnd-srcBegin) - 1
      * </pre></blockquote>
+     * 复制到 dstBegin + (srcEnd-srcBegin) - 1 索引位置
      *
      * @param      srcBegin   index of the first character in the string
      *                        to copy.
@@ -1043,11 +1058,14 @@ public final class String
     }
 
     /**
-     * Compares this string to the specified object.  The result is {@code
-     * true} if and only if the argument is not {@code null} and is a {@code
-     * String} object that represents the same sequence of characters as this
-     * object.
-     *
+     * Compares this string to the specified object.  
+     * 比较字符串
+     * 
+     * The result is {@code true} if and only if 
+     * the argument is not {@code null} 
+     * and is a {@code String} object that represents the same sequence of characters as this object.
+     * 当且仅当参数非空且字符串子序列相等时返回true
+     * 
      * @param  anObject
      *         The object to compare this {@code String} against
      *
@@ -1064,10 +1082,12 @@ public final class String
         if (anObject instanceof String) {
             String anotherString = (String)anObject;
             int n = value.length;
+            // 判断长度
             if (n == anotherString.value.length) {
                 char v1[] = value;
                 char v2[] = anotherString.value;
                 int i = 0;
+                // 循环对比字符串
                 while (n-- != 0) {
                     if (v1[i] != v2[i])
                         return false;
@@ -1080,10 +1100,14 @@ public final class String
     }
 
     /**
-     * Compares this string to the specified {@code StringBuffer}.  The result
-     * is {@code true} if and only if this {@code String} represents the same
-     * sequence of characters as the specified {@code StringBuffer}. This method
-     * synchronizes on the {@code StringBuffer}.
+     * Compares this string to the specified {@code StringBuffer}.  
+     * 比较String和StringBUffer的值是否相同
+     * 
+     * The result is {@code true} if and only if this {@code String} represents the same sequence of characters as the specified {@code StringBuffer}. 
+     * 注释中提到了true如果且仅如果这个String表示与指定StringBuffer相同的字符序列。
+     * 
+     * This method synchronizes on the {@code StringBuffer}.
+     * 方法会同步于StringBuffer对象。这意味着在进行比较操作时，可能会对StringBuffer对象进行同步处理，确保其线程安全。
      *
      * @param  sb
      *         The {@code StringBuffer} to compare this {@code String} against
