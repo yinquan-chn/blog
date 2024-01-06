@@ -1122,6 +1122,9 @@ public final class String
         return contentEquals((CharSequence)sb);
     }
 
+    /**
+     * 非同步的内容比较，AbstractStringBuilder两个实现是StringBuffer和StringBuilder
+     */
     private boolean nonSyncContentEquals(AbstractStringBuilder sb) {
         char v1[] = value;
         char v2[] = sb.getValue();
@@ -1138,11 +1141,15 @@ public final class String
     }
 
     /**
-     * Compares this string to the specified {@code CharSequence}.  The
-     * result is {@code true} if and only if this {@code String} represents the
-     * same sequence of char values as the specified sequence. Note that if the
-     * {@code CharSequence} is a {@code StringBuffer} then the method
-     * synchronizes on it.
+     * Compares this string to the specified {@code CharSequence}.  
+     * 比较字符串
+     * 
+     * The result is {@code true} if and only if this {@code String} represents the
+     * same sequence of char values as the specified sequence. 
+     * 比较字符序列的内容是否相同
+     * 
+     * Note that if the {@code CharSequence} is a {@code StringBuffer} then the method synchronizes on it.
+     * 如果CharSequence是一个StringBuffer，那么该方法会对其同步
      *
      * @param  cs
      *         The sequence to compare this {@code String} against
@@ -1155,8 +1162,10 @@ public final class String
      */
     public boolean contentEquals(CharSequence cs) {
         // Argument is a StringBuffer, StringBuilder
+        // 如果参数是StringBuffer或者StringBuilder
         if (cs instanceof AbstractStringBuilder) {
             if (cs instanceof StringBuffer) {
+                // StringBuffer是线程安全的
                 synchronized(cs) {
                    return nonSyncContentEquals((AbstractStringBuilder)cs);
                 }
@@ -1165,10 +1174,12 @@ public final class String
             }
         }
         // Argument is a String
+        // 类型是String，则直接调用equals方法
         if (cs instanceof String) {
             return equals(cs);
         }
         // Argument is a generic CharSequence
+        // 如果参数是一般的CharSequence，则逐一比较char
         char v1[] = value;
         int n = v1.length;
         if (n != cs.length()) {
@@ -1183,9 +1194,10 @@ public final class String
     }
 
     /**
-     * Compares this {@code String} to another {@code String}, ignoring case
-     * considerations.  Two strings are considered equal ignoring case if they
-     * are of the same length and corresponding characters in the two strings
+     * Compares this {@code String} to another {@code String}, ignoring case considerations.  
+     * 比较字符串忽略大消息
+     * 
+     * Two strings are considered equal ignoring case if they are of the same length and corresponding characters in the two strings
      * are equal ignoring case.
      *
      * <p> Two characters {@code c1} and {@code c2} are considered the same
@@ -1219,37 +1231,46 @@ public final class String
 
     /**
      * Compares two strings lexicographically.
-     * The comparison is based on the Unicode value of each character in
-     * the strings. The character sequence represented by this
-     * {@code String} object is compared lexicographically to the
-     * character sequence represented by the argument string. The result is
-     * a negative integer if this {@code String} object
-     * lexicographically precedes the argument string. The result is a
-     * positive integer if this {@code String} object lexicographically
-     * follows the argument string. The result is zero if the strings
-     * are equal; {@code compareTo} returns {@code 0} exactly when
+     * 比较两个字符串
+     * 
+     * The comparison is based on the Unicode value of each character in the strings. 
+     * The character sequence represented by this {@code String} object is compared lexicographically to the
+     * character sequence represented by the argument string. 
+     * 对字符串的每个字符的字典值进行比较
+     * 
+     * The result is a negative integer if this {@code String} object lexicographically precedes the argument string. 
+     * 如果String在字典中位于参数字符串之前，则返回负整数
+     * 
+     * The result is a positive integer if this {@code String} object lexicographically follows the argument string.
+     * 如果String在字典中位于参数字符串之后，则返回正整数
+     * 
+     * The result is zero if the strings are equal; {@code compareTo} returns {@code 0} exactly when
      * the {@link #equals(Object)} method would return {@code true}.
-     * <p>
-     * This is the definition of lexicographic ordering. If two strings are
-     * different, then either they have different characters at some index
-     * that is a valid index for both strings, or their lengths are different,
-     * or both. If they have different characters at one or more index
-     * positions, let <i>k</i> be the smallest such index; then the string
-     * whose character at position <i>k</i> has the smaller value, as
-     * determined by using the &lt; operator, lexicographically precedes the
-     * other string. In this case, {@code compareTo} returns the
-     * difference of the two character values at position {@code k} in
-     * the two string -- that is, the value:
-     * <blockquote><pre>
+     * 如果string相等，则返回true，而且equals也会返回true
+     * 
+     * This is the definition of lexicographic ordering. 
+     * If two strings are different, then either they have different characters at some index
+     * that is a valid index for both strings, or their lengths are different, or both. 
+     * 如果两个字符串不同，则他们在某个索引处的字符会不同，或者长度会不同，或者两种都有
+     * 
+     * If they have different characters at one or more index positions, let <i>k</i> be the smallest such index; 
+     * 如果它们在一个或多个索引位置有不同的字符，找到最小的索引位置
+     * 
+     * then the string whose character at position <i>k</i> has the smaller value, as determined by using the &lt;
+     * 比较这两个字符串在k索引位置上的字符，根据<运算符来确定哪个字符的值更小
+     * 
+     * operator, lexicographically precedes the other string.
+     * 根据这个比较结果，较小的字符对应的字符串在字典序上排在前面
+     * 
+     * In this case, {@code compareTo} returns the difference of the two character values at position {@code k} in the two string -- that is, the value:
+     * 在这种情况下将会返回两个字符串中k索引出的两个字符的差
      * this.charAt(k)-anotherString.charAt(k)
-     * </pre></blockquote>
-     * If there is no index position at which they differ, then the shorter
-     * string lexicographically precedes the longer string. In this case,
-     * {@code compareTo} returns the difference of the lengths of the
-     * strings -- that is, the value:
-     * <blockquote><pre>
+     * 
+     * If there is no index position at which they differ, then the shorterstring lexicographically precedes the longer string. 
+     * 如果没有不存在不同的索引位置，则较短的字符先于较长的字符
+     * In this case, {@code compareTo} returns the difference of the lengths of the strings -- that is, the value:
+     * 在这种情况下，将返回字符串的长度差
      * this.length()-anotherString.length()
-     * </pre></blockquote>
      *
      * @param   anotherString   the {@code String} to be compared.
      * @return  the value {@code 0} if the argument string is equal to
@@ -1270,27 +1291,37 @@ public final class String
             char c1 = v1[k];
             char c2 = v2[k];
             if (c1 != c2) {
+                // 如果存在字符不同的索引，则返回字符的差
                 return c1 - c2;
             }
             k++;
         }
+        // 如果不存在字符不同的索引，则返回字符串的长度差
         return len1 - len2;
     }
 
     /**
-     * A Comparator that orders {@code String} objects as by
-     * {@code compareToIgnoreCase}. This comparator is serializable.
-     * <p>
+     * A Comparator that orders {@code String} objects as by {@code compareToIgnoreCase}. 
+     * String的比较器进行忽略大小写的比较
+     * This comparator is serializable.
+     * 
      * Note that this Comparator does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
+     * 比较器没有考虑区域的设置，可能会导致不理想的结果
+     * 
      * The java.text package provides <em>Collators</em> to allow
      * locale-sensitive ordering.
+     * 如果需要更复杂的、考虑地区的字符串比较推荐使用java.text.Collator#compare(String, String)
      *
      * @see     java.text.Collator#compare(String, String)
      * @since   1.2
      */
     public static final Comparator<String> CASE_INSENSITIVE_ORDER
                                          = new CaseInsensitiveComparator();
+
+    /**
+     * 私有静态内部类，该类实现了Comparator<String>接口和java.io.Serializable接口。这个比较器用于比较两个字符串，而不考虑它们的大小写
+     */
     private static class CaseInsensitiveComparator
             implements Comparator<String>, java.io.Serializable {
         // use serialVersionUID from JDK 1.2.2 for interoperability
@@ -1324,17 +1355,18 @@ public final class String
     }
 
     /**
-     * Compares two strings lexicographically, ignoring case
-     * differences. This method returns an integer whose sign is that of
-     * calling {@code compareTo} with normalized versions of the strings
-     * where case differences have been eliminated by calling
-     * {@code Character.toLowerCase(Character.toUpperCase(character))} on
-     * each character.
-     * <p>
+     * Compares two strings lexicographically, ignoring case differences. 
+     * 比较两个字符串，忽略大小写
+     * 
+     * This method returns an integer whose sign is that of calling {@code compareTo} with normalized versions of the strings
+     * where case differences have been eliminated by calling {@code Character.toLowerCase(Character.toUpperCase(character))} on each character.
+     * 这个方法返回的整数，逻辑和compareTo一样，详情看compareTo方法的分析
+     * 
      * Note that this method does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
      * The java.text package provides <em>collators</em> to allow
      * locale-sensitive ordering.
+     * 此方法不考虑区域设置
      *
      * @param   str   the {@code String} to be compared.
      * @return  a negative integer, zero, or a positive integer as the
@@ -1349,31 +1381,18 @@ public final class String
 
     /**
      * Tests if two string regions are equal.
-     * <p>
-     * A substring of this {@code String} object is compared to a substring
-     * of the argument other. The result is true if these substrings
-     * represent identical character sequences. The substring of this
-     * {@code String} object to be compared begins at index {@code toffset}
-     * and has length {@code len}. The substring of other to be compared
-     * begins at index {@code ooffset} and has length {@code len}. The
-     * result is {@code false} if and only if at least one of the following
-     * is true:
-     * <ul><li>{@code toffset} is negative.
-     * <li>{@code ooffset} is negative.
-     * <li>{@code toffset+len} is greater than the length of this
-     * {@code String} object.
-     * <li>{@code ooffset+len} is greater than the length of the other
-     * argument.
-     * <li>There is some nonnegative integer <i>k</i> less than {@code len}
-     * such that:
-     * {@code this.charAt(toffset + }<i>k</i>{@code ) != other.charAt(ooffset + }
-     * <i>k</i>{@code )}
-     * </ul>
+     * 区域匹配
+     * 
+     * 满足其他条件是时，返回false：
+     * 1、toffset为负数
+     * 2、ooffset为负数
+     * 3、toffset+len 大于 this的长度
+     * 4、ooffset+len 大于 other的长度
+     * 5、如果上面条件都不满足，则存在不相等的字符
      *
-     * @param   toffset   the starting offset of the subregion in this string.
-     * @param   other     the string argument.
-     * @param   ooffset   the starting offset of the subregion in the string
-     *                    argument.
+     * @param   toffset   this strings的开始偏移量
+     * @param   other     比较的字符串.
+     * @param   ooffset   比较字符串的偏移量
      * @param   len       the number of characters to compare.
      * @return  {@code true} if the specified subregion of this string
      *          exactly matches the specified subregion of the string argument;
