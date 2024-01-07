@@ -1393,7 +1393,7 @@ public final class String
      * @param   toffset   this strings的开始偏移量
      * @param   other     比较的字符串.
      * @param   ooffset   比较字符串的偏移量
-     * @param   len       the number of characters to compare.
+     * @param   len       需要比较的长度
      * @return  {@code true} if the specified subregion of this string
      *          exactly matches the specified subregion of the string argument;
      *          {@code false} otherwise.
@@ -1405,6 +1405,7 @@ public final class String
         char pa[] = other.value;
         int po = ooffset;
         // Note: toffset, ooffset, or len might be near -1>>>1.
+        // 使用减法时为了避免整数溢出
         if ((ooffset < 0) || (toffset < 0)
                 || (toffset > (long)value.length - len)
                 || (ooffset > (long)other.value.length - len)) {
@@ -1420,39 +1421,7 @@ public final class String
 
     /**
      * Tests if two string regions are equal.
-     * <p>
-     * A substring of this {@code String} object is compared to a substring
-     * of the argument {@code other}. The result is {@code true} if these
-     * substrings represent character sequences that are the same, ignoring
-     * case if and only if {@code ignoreCase} is true. The substring of
-     * this {@code String} object to be compared begins at index
-     * {@code toffset} and has length {@code len}. The substring of
-     * {@code other} to be compared begins at index {@code ooffset} and
-     * has length {@code len}. The result is {@code false} if and only if
-     * at least one of the following is true:
-     * <ul><li>{@code toffset} is negative.
-     * <li>{@code ooffset} is negative.
-     * <li>{@code toffset+len} is greater than the length of this
-     * {@code String} object.
-     * <li>{@code ooffset+len} is greater than the length of the other
-     * argument.
-     * <li>{@code ignoreCase} is {@code false} and there is some nonnegative
-     * integer <i>k</i> less than {@code len} such that:
-     * <blockquote><pre>
-     * this.charAt(toffset+k) != other.charAt(ooffset+k)
-     * </pre></blockquote>
-     * <li>{@code ignoreCase} is {@code true} and there is some nonnegative
-     * integer <i>k</i> less than {@code len} such that:
-     * <blockquote><pre>
-     * Character.toLowerCase(this.charAt(toffset+k)) !=
-     Character.toLowerCase(other.charAt(ooffset+k))
-     * </pre></blockquote>
-     * and:
-     * <blockquote><pre>
-     * Character.toUpperCase(this.charAt(toffset+k)) !=
-     *         Character.toUpperCase(other.charAt(ooffset+k))
-     * </pre></blockquote>
-     * </ul>
+     * 重载了上面regionMatches方法，增加了是否忽略大小写判断
      *
      * @param   ignoreCase   if {@code true}, ignore case when comparing
      *                       characters.
@@ -1487,19 +1456,13 @@ public final class String
                 continue;
             }
             if (ignoreCase) {
-                // If characters don't match but case may be ignored,
-                // try converting both characters to uppercase.
-                // If the results match, then the comparison scan should
-                // continue.
+                // 将来字符都转换为大写进行比较
                 char u1 = Character.toUpperCase(c1);
                 char u2 = Character.toUpperCase(c2);
                 if (u1 == u2) {
                     continue;
                 }
-                // Unfortunately, conversion to uppercase does not work properly
-                // for the Georgian alphabet, which has strange rules about case
-                // conversion.  So we need to make one last check before
-                // exiting.
+                // 字符串转换为大写并不适用于格鲁吉亚字母表，因为格鲁吉亚字母表在大小写转换方面有特殊的规则。因此，在退出之前，我们需要进行最后一次检查。
                 if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
                     continue;
                 }
@@ -1510,21 +1473,12 @@ public final class String
     }
 
     /**
-     * Tests if the substring of this string beginning at the
-     * specified index starts with the specified prefix.
+     * 测试字符串是由从指定索引位置开始，已指定的前缀开头
      *
-     * @param   prefix    the prefix.
-     * @param   toffset   where to begin looking in this string.
-     * @return  {@code true} if the character sequence represented by the
-     *          argument is a prefix of the substring of this object starting
-     *          at index {@code toffset}; {@code false} otherwise.
-     *          The result is {@code false} if {@code toffset} is
-     *          negative or greater than the length of this
-     *          {@code String} object; otherwise the result is the same
-     *          as the result of the expression
-     *          <pre>
-     *          this.substring(toffset).startsWith(prefix)
-     *          </pre>
+     * @param   prefix    匹配的前缀
+     * @param   toffset   开始匹配的索引
+     * @return  如果传递的参数是从toffset索引开始的子字符串的前缀，则返回true；否则返回false
+     * 如果toffset时负数或者大于String的长度，则返回false；否则与this.substring(toffset).startsWith(prefix)时等价的
      */
     public boolean startsWith(String prefix, int toffset) {
         char ta[] = value;
@@ -1536,6 +1490,7 @@ public final class String
         if ((toffset < 0) || (toffset > value.length - pc)) {
             return false;
         }
+        // 逐个字符进行比较
         while (--pc >= 0) {
             if (ta[to++] != pa[po++]) {
                 return false;
@@ -1546,8 +1501,9 @@ public final class String
 
     /**
      * Tests if this string starts with the specified prefix.
+     * 判断字符串已指定的前缀开头
      *
-     * @param   prefix   the prefix.
+     * @param   prefix   前缀
      * @return  {@code true} if the character sequence represented by the
      *          argument is a prefix of the character sequence represented by
      *          this string; {@code false} otherwise.
@@ -1563,6 +1519,7 @@ public final class String
 
     /**
      * Tests if this string ends with the specified suffix.
+     * 判断字符串已指定的后缀结尾
      *
      * @param   suffix   the suffix.
      * @return  {@code true} if the character sequence represented by the
@@ -1573,20 +1530,19 @@ public final class String
      *          as determined by the {@link #equals(Object)} method.
      */
     public boolean endsWith(String suffix) {
+        // 比较string最后从suffix同长度的索引的子字符串是否相等
         return startsWith(suffix, value.length - suffix.value.length);
     }
 
     /**
-     * Returns a hash code for this string. The hash code for a
-     * {@code String} object is computed as
-     * <blockquote><pre>
-     * s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]
-     * </pre></blockquote>
-     * using {@code int} arithmetic, where {@code s[i]} is the
-     * <i>i</i>th character of the string, {@code n} is the length of
-     * the string, and {@code ^} indicates exponentiation.
-     * (The hash value of the empty string is zero.)
-     *
+     * Returns a hash code for this string. 
+     * 返回这个String的hash code
+     * 
+     * hash code的计算方式: s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]
+     * s[i]：表示字符串中的第i个字符
+     * n：表示字符串的长度
+     * ^：表示指数运算
+     * 空字符串的hash code为0
      * @return  a hash code value for this object.
      */
     public int hashCode() {
@@ -1603,23 +1559,9 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the first occurrence of
-     * the specified character. If a character with value
-     * {@code ch} occurs in the character sequence represented by
-     * this {@code String} object, then the index (in Unicode
-     * code units) of the first such occurrence is returned. For
-     * values of {@code ch} in the range from 0 to 0xFFFF
-     * (inclusive), this is the smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * this.charAt(<i>k</i>) == ch
-     * </pre></blockquote>
-     * is true. For other values of {@code ch}, it is the
-     * smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * this.codePointAt(<i>k</i>) == ch
-     * </pre></blockquote>
-     * is true. In either case, if no such character occurs in this
-     * string, then {@code -1} is returned.
+     * Returns the index within this string of the first occurrence of the specified character. 
+     * 返回指定字符第一次出现的索引
+     * 该字符存在于字符串中，则返回其位置；否则返回-1
      *
      * @param   ch   a character (Unicode code point).
      * @return  the index of the first occurrence of the character in the
@@ -1631,36 +1573,9 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the first occurrence of the
-     * specified character, starting the search at the specified index.
-     * <p>
-     * If a character with value {@code ch} occurs in the
-     * character sequence represented by this {@code String}
-     * object at an index no smaller than {@code fromIndex}, then
-     * the index of the first such occurrence is returned. For values
-     * of {@code ch} in the range from 0 to 0xFFFF (inclusive),
-     * this is the smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &gt;= fromIndex)
-     * </pre></blockquote>
-     * is true. For other values of {@code ch}, it is the
-     * smallest value <i>k</i> such that:
-     * <blockquote><pre>
-     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &gt;= fromIndex)
-     * </pre></blockquote>
-     * is true. In either case, if no such character occurs in this
-     * string at or after position {@code fromIndex}, then
-     * {@code -1} is returned.
-     *
-     * <p>
-     * There is no restriction on the value of {@code fromIndex}. If it
-     * is negative, it has the same effect as if it were zero: this entire
-     * string may be searched. If it is greater than the length of this
-     * string, it has the same effect as if it were equal to the length of
-     * this string: {@code -1} is returned.
-     *
-     * <p>All indices are specified in {@code char} values
-     * (Unicode code units).
+     * 从指定索引处开始匹配，返回第一次出现字符的索引位置
+     * 该字符存在于字符串中，则返回其位置；否则返回-1
+     * 该方法适用于处理包括各种特殊字符在内的所有Unicode字符
      *
      * @param   ch          a character (Unicode code point).
      * @param   fromIndex   the index to start the search from.
@@ -1678,7 +1593,9 @@ public final class String
             return -1;
         }
 
+        
         if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+            // 这个常量是Unicode中补充码位的最低值。如果ch小于这个值，说明它是一个BMP码位（基础多语言平面码位）或者是一个负值（无效码位）
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
             final char[] value = this.value;
@@ -1689,12 +1606,14 @@ public final class String
             }
             return -1;
         } else {
+            // 如果ch不小于Character.MIN_SUPPLEMENTARY_CODE_POINT，那么调用indexOfSupplementary(ch, fromIndex)方法来查找字符的位置。
             return indexOfSupplementary(ch, fromIndex);
         }
     }
 
     /**
      * Handles (rare) calls of indexOf with a supplementary character.
+     * 处理使用补充码位的字符的indexOf方法的调用
      */
     private int indexOfSupplementary(int ch, int fromIndex) {
         if (Character.isValidCodePoint(ch)) {
@@ -1712,22 +1631,7 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the last occurrence of
-     * the specified character. For values of {@code ch} in the
-     * range from 0 to 0xFFFF (inclusive), the index (in Unicode code
-     * units) returned is the largest value <i>k</i> such that:
-     * <blockquote><pre>
-     * this.charAt(<i>k</i>) == ch
-     * </pre></blockquote>
-     * is true. For other values of {@code ch}, it is the
-     * largest value <i>k</i> such that:
-     * <blockquote><pre>
-     * this.codePointAt(<i>k</i>) == ch
-     * </pre></blockquote>
-     * is true.  In either case, if no such character occurs in this
-     * string, then {@code -1} is returned.  The
-     * {@code String} is searched backwards starting at the last
-     * character.
+     * 获取最后一个匹配的值
      *
      * @param   ch   a character (Unicode code point).
      * @return  the index of the last occurrence of the character in the
@@ -1739,41 +1643,11 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the last occurrence of
-     * the specified character, searching backward starting at the
-     * specified index. For values of {@code ch} in the range
-     * from 0 to 0xFFFF (inclusive), the index returned is the largest
-     * value <i>k</i> such that:
-     * <blockquote><pre>
-     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &lt;= fromIndex)
-     * </pre></blockquote>
-     * is true. For other values of {@code ch}, it is the
-     * largest value <i>k</i> such that:
-     * <blockquote><pre>
-     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &lt;= fromIndex)
-     * </pre></blockquote>
-     * is true. In either case, if no such character occurs in this
-     * string at or before position {@code fromIndex}, then
-     * {@code -1} is returned.
-     *
-     * <p>All indices are specified in {@code char} values
-     * (Unicode code units).
-     *
-     * @param   ch          a character (Unicode code point).
-     * @param   fromIndex   the index to start the search from. There is no
-     *          restriction on the value of {@code fromIndex}. If it is
-     *          greater than or equal to the length of this string, it has
-     *          the same effect as if it were equal to one less than the
-     *          length of this string: this entire string may be searched.
-     *          If it is negative, it has the same effect as if it were -1:
-     *          -1 is returned.
-     * @return  the index of the last occurrence of the character in the
-     *          character sequence represented by this object that is less
-     *          than or equal to {@code fromIndex}, or {@code -1}
-     *          if the character does not occur before that point.
+     * 返回从索引位置往前最后一个匹配的值
      */
     public int lastIndexOf(int ch, int fromIndex) {
         if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+            // 这个常量是Unicode中补充码位的最低值。如果ch小于这个值，说明它是一个BMP码位（基础多语言平面码位）或者是一个负值（无效码位）
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
             final char[] value = this.value;
@@ -1791,6 +1665,7 @@ public final class String
 
     /**
      * Handles (rare) calls of lastIndexOf with a supplementary character.
+     * 处理使用补充码位的字符的lastIndexOf方法的调用
      */
     private int lastIndexOfSupplementary(int ch, int fromIndex) {
         if (Character.isValidCodePoint(ch)) {
@@ -1808,14 +1683,7 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the first occurrence of the
-     * specified substring.
-     *
-     * <p>The returned index is the smallest value <i>k</i> for which:
-     * <blockquote><pre>
-     * this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * 返回第一次出现字符串的索引位置
      *
      * @param   str   the substring to search for.
      * @return  the index of the first occurrence of the specified substring,
@@ -1826,14 +1694,7 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the first occurrence of the
-     * specified substring, starting at the specified index.
-     *
-     * <p>The returned index is the smallest value <i>k</i> for which:
-     * <blockquote><pre>
-     * <i>k</i> &gt;= fromIndex {@code &&} this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * 从指定索引处开始匹配，返回第一次出现字符串的索引位置
      *
      * @param   str         the substring to search for.
      * @param   fromIndex   the index from which to start the search.
@@ -1847,15 +1708,13 @@ public final class String
     }
 
     /**
-     * Code shared by String and AbstractStringBuilder to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
+     * 在字符数组source中查找字符串target的首次出现位置。这个方法可能是String类和AbstractStringBuilder类共享的代码的一部分
      *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   fromIndex    the index to begin searching from.
+     * @param   source       the characters being searched.字符数组，即被搜索的字符串
+     * @param   sourceOffset offset of the source string.源字符串的起始偏移量。
+     * @param   sourceCount  count of the source string.源字符串的长度。
+     * @param   target       the characters being searched for.要搜索的字符串。
+     * @param   fromIndex    the index to begin searching from.开始搜索的位置。
      */
     static int indexOf(char[] source, int sourceOffset, int sourceCount,
             String target, int fromIndex) {
@@ -1865,21 +1724,20 @@ public final class String
     }
 
     /**
-     * Code shared by String and StringBuffer to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
+     * 描述了String和StringBuffer类共享的用于执行搜索操作的代码。源是正在被搜索的字符数组，目标是正在被搜索的字符串。
      *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   targetOffset offset of the target string.
-     * @param   targetCount  count of the target string.
-     * @param   fromIndex    the index to begin searching from.
+     * @param   source       the characters being searched.字符数组，即被搜索的字符串
+     * @param   sourceOffset offset of the source string.源字符串的起始偏移量。
+     * @param   sourceCount  count of the source string.源字符串的长度。
+     * @param   target       the characters being searched for.要搜索的字符串。
+     * @param   targetOffset offset of the target string.搜索的字符串的起始偏移量。
+     * @param   targetCount  count of the target string.搜索的字符串的长度。
+     * @param   fromIndex    the index to begin searching from.开始搜索的位置。
      */
     static int indexOf(char[] source, int sourceOffset, int sourceCount,
             char[] target, int targetOffset, int targetCount,
             int fromIndex) {
+        // 检查边界
         if (fromIndex >= sourceCount) {
             return (targetCount == 0 ? sourceCount : -1);
         }
@@ -1895,11 +1753,13 @@ public final class String
 
         for (int i = sourceOffset + fromIndex; i <= max; i++) {
             /* Look for first character. */
+            // 寻找第一个字符
             if (source[i] != first) {
                 while (++i <= max && source[i] != first);
             }
 
             /* Found first character, now look at the rest of v2 */
+            // 找到第一个字符后往后比较剩余的字符
             if (i <= max) {
                 int j = i + 1;
                 int end = j + targetCount - 1;
@@ -1908,6 +1768,7 @@ public final class String
 
                 if (j == end) {
                     /* Found whole string. */
+                    // 如果找到子串，则返回子串在源字符串中的起始位置（相对于源字符串的偏移量）
                     return i - sourceOffset;
                 }
             }
@@ -1916,15 +1777,7 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the last occurrence of the
-     * specified substring.  The last occurrence of the empty string ""
-     * is considered to occur at the index value {@code this.length()}.
-     *
-     * <p>The returned index is the largest value <i>k</i> for which:
-     * <blockquote><pre>
-     * this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * 最后一次出现字符串的位置
      *
      * @param   str   the substring to search for.
      * @return  the index of the last occurrence of the specified substring,
@@ -1935,14 +1788,7 @@ public final class String
     }
 
     /**
-     * Returns the index within this string of the last occurrence of the
-     * specified substring, searching backward starting at the specified index.
-     *
-     * <p>The returned index is the largest value <i>k</i> for which:
-     * <blockquote><pre>
-     * <i>k</i> {@code <=} fromIndex {@code &&} this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * 最后一次出现字符串的位置，从索引位置往前
      *
      * @param   str         the substring to search for.
      * @param   fromIndex   the index to start the search from.
@@ -1960,11 +1806,11 @@ public final class String
      * source is the character array being searched, and the target
      * is the string being searched for.
      *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   fromIndex    the index to begin searching from.
+     * @param   source       the characters being searched.源字符数组，即被搜索的字符串。
+     * @param   sourceOffset offset of the source string.源字符串的起始偏移量。
+     * @param   sourceCount  count of the source string.源字符串的长度。
+     * @param   target       the characters being searched for.要搜索的子串字符数组。
+     * @param   fromIndex    the index to begin searching from.开始搜索的位置。
      */
     static int lastIndexOf(char[] source, int sourceOffset, int sourceCount,
             String target, int fromIndex) {
@@ -1978,10 +1824,10 @@ public final class String
      * source is the character array being searched, and the target
      * is the string being searched for.
      *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
+     * @param   source       the characters being searched.源字符数组，即被搜索的字符串。
+     * @param   sourceOffset offset of the source string.源字符串的起始偏移量。
+     * @param   sourceCount  count of the source string.源字符串的长度。
+     * @param   target       the characters being searched for.要搜索的子串字符数组
      * @param   targetOffset offset of the target string.
      * @param   targetCount  count of the target string.
      * @param   fromIndex    the index to begin searching from.
