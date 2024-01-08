@@ -1791,7 +1791,7 @@ public final class String
      * 最后一次出现字符串的位置，从索引位置往前
      *
      * @param   str         the substring to search for.
-     * @param   fromIndex   the index to start the search from.
+     * @param   fromIndex                                    
      * @return  the index of the last occurrence of the specified substring,
      *          searching backward from the specified index,
      *          or {@code -1} if there is no such occurrence.
@@ -1828,16 +1828,15 @@ public final class String
      * @param   sourceOffset offset of the source string.源字符串的起始偏移量。
      * @param   sourceCount  count of the source string.源字符串的长度。
      * @param   target       the characters being searched for.要搜索的子串字符数组
-     * @param   targetOffset offset of the target string.
-     * @param   targetCount  count of the target string.
+     * @param   targetOffset offset of the target string.子串字符数组的起始偏移量
+     * @param   targetCount  count of the target string.子串的长度
      * @param   fromIndex    the index to begin searching from.
      */
     static int lastIndexOf(char[] source, int sourceOffset, int sourceCount,
             char[] target, int targetOffset, int targetCount,
             int fromIndex) {
         /*
-         * Check arguments; return immediately where possible. For
-         * consistency, don't check for null str.
+         * Check arguments; return immediately where possible. For consistency, don't check for null str.
          */
         int rightIndex = sourceCount - targetCount;
         if (fromIndex < 0) {
@@ -1851,19 +1850,30 @@ public final class String
             return fromIndex;
         }
 
+        // 计算搜索数组的index
         int strLastIndex = targetOffset + targetCount - 1;
+        // 获取搜索数组的最后字符
         char strLastChar = target[strLastIndex];
+
+        // 满足条件的最小索引
         int min = sourceOffset + targetCount - 1;
+        // 从min后往前加上差值得到开始搜索的索引位置
         int i = min + fromIndex;
 
+    // 定义一个标签位置
     startSearchForLastChar:
         while (true) {
+            // 从后往前搜索最后一个字符的位置
             while (i >= min && source[i] != strLastChar) {
                 i--;
             }
+
+            // 如果没有找都匹配的字符，直接返回-1
             if (i < min) {
                 return -1;
             }
+
+            // 找到了匹配的字符，则从 i 以前的位置匹配目标字串
             int j = i - 1;
             int start = j - (targetCount - 1);
             int k = strLastIndex - 1;
@@ -1871,6 +1881,7 @@ public final class String
             while (j > start) {
                 if (source[j--] != target[k--]) {
                     i--;
+                    // 如果都不匹配，则将i位置向后移动一位，继续搜索
                     continue startSearchForLastChar;
                 }
             }
@@ -1879,10 +1890,8 @@ public final class String
     }
 
     /**
-     * Returns a string that is a substring of this string. The
-     * substring begins with the character at the specified index and
-     * extends to the end of this string. <p>
-     * Examples:
+     * 返回一个子字符串，从目标索引位置beginIndex到结尾
+     * 
      * <blockquote><pre>
      * "unhappy".substring(2) returns "happy"
      * "Harbison".substring(3) returns "bison"
@@ -1896,6 +1905,7 @@ public final class String
      *             length of this {@code String} object.
      */
     public String substring(int beginIndex) {
+        // 校验边界
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(beginIndex);
         }
@@ -1903,24 +1913,22 @@ public final class String
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(subLen);
         }
+
+        // 执行操作
         return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
     }
 
     /**
-     * Returns a string that is a substring of this string. The
-     * substring begins at the specified {@code beginIndex} and
-     * extends to the character at index {@code endIndex - 1}.
-     * Thus the length of the substring is {@code endIndex-beginIndex}.
-     * <p>
+     * 返回一个子字符串，从beginIndex到endIndex，遵循左闭右开
      * Examples:
      * <blockquote><pre>
      * "hamburger".substring(4, 8) returns "urge"
      * "smiles".substring(1, 5) returns "mile"
      * </pre></blockquote>
      *
-     * @param      beginIndex   the beginning index, inclusive.
-     * @param      endIndex     the ending index, exclusive.
-     * @return     the specified substring.
+     * @param      beginIndex   the beginning index, inclusive.开始索引，包括在内
+     * @param      endIndex     the ending index, exclusive.结束索引，不包括在内
+     * @return     the specified substring.子字符串
      * @exception  IndexOutOfBoundsException  if the
      *             {@code beginIndex} is negative, or
      *             {@code endIndex} is larger than the length of
@@ -1929,6 +1937,7 @@ public final class String
      *             {@code endIndex}.
      */
     public String substring(int beginIndex, int endIndex) {
+        // 检查范围边界
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(beginIndex);
         }
@@ -1939,30 +1948,19 @@ public final class String
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(subLen);
         }
+        // 执行方法
         return ((beginIndex == 0) && (endIndex == value.length)) ? this
                 : new String(value, beginIndex, subLen);
     }
 
     /**
-     * Returns a character sequence that is a subsequence of this sequence.
-     *
-     * <p> An invocation of this method of the form
-     *
-     * <blockquote><pre>
-     * str.subSequence(begin,&nbsp;end)</pre></blockquote>
-     *
-     * behaves in exactly the same way as the invocation
-     *
-     * <blockquote><pre>
-     * str.substring(begin,&nbsp;end)</pre></blockquote>
-     *
-     * @apiNote
      * This method is defined so that the {@code String} class can implement
      * the {@link CharSequence} interface.
+     * 实现CharSequence接口，提供一种方式来获取字符串的子序列
      *
-     * @param   beginIndex   the begin index, inclusive.
-     * @param   endIndex     the end index, exclusive.
-     * @return  the specified subsequence.
+     * @param   beginIndex   the begin index, inclusive.开始索引，包括在内
+     * @param   endIndex     the end index, exclusive.结束索引，不包括在内
+     * @return  the specified subsequence.子字符串
      *
      * @throws  IndexOutOfBoundsException
      *          if {@code beginIndex} or {@code endIndex} is negative,
@@ -1977,14 +1975,7 @@ public final class String
     }
 
     /**
-     * Concatenates the specified string to the end of this string.
-     * <p>
-     * If the length of the argument string is {@code 0}, then this
-     * {@code String} object is returned. Otherwise, a
-     * {@code String} object is returned that represents a character
-     * sequence that is the concatenation of the character sequence
-     * represented by this {@code String} object and the character
-     * sequence represented by the argument string.<p>
+     * 将一个字符串连接到当前字符串的结尾
      * Examples:
      * <blockquote><pre>
      * "cares".concat("s") returns "caress"
@@ -1997,28 +1988,23 @@ public final class String
      *          characters followed by the string argument's characters.
      */
     public String concat(String str) {
+        // 检查空字符串
         int otherLen = str.length();
         if (otherLen == 0) {
             return this;
         }
+        // 复制字符数组
         int len = value.length;
         char buf[] = Arrays.copyOf(value, len + otherLen);
+        // 将传入的字符串复制到数组
         str.getChars(buf, len);
+        // 创建并返回新字符串
         return new String(buf, true);
     }
 
     /**
-     * Returns a string resulting from replacing all occurrences of
-     * {@code oldChar} in this string with {@code newChar}.
-     * <p>
-     * If the character {@code oldChar} does not occur in the
-     * character sequence represented by this {@code String} object,
-     * then a reference to this {@code String} object is returned.
-     * Otherwise, a {@code String} object is returned that
-     * represents a character sequence identical to the character sequence
-     * represented by this {@code String} object, except that every
-     * occurrence of {@code oldChar} is replaced by an occurrence
-     * of {@code newChar}.
+     * 将字符串中所有出现的oldChar字符替换为newChar字符
+     * 如果oldChar没有出现在字符串中，那么直接返回原始字符串
      * <p>
      * Examples:
      * <blockquote><pre>
@@ -2037,21 +2023,31 @@ public final class String
      *          occurrence of {@code oldChar} with {@code newChar}.
      */
     public String replace(char oldChar, char newChar) {
+        // 判断是是否有替换必要
         if (oldChar != newChar) {
             int len = value.length;
             int i = -1;
             char[] val = value; /* avoid getfield opcode */
 
+            // 查找第一个匹配的字符
             while (++i < len) {
                 if (val[i] == oldChar) {
                     break;
                 }
             }
+            
+            // 检查是否找到了匹配的字符
             if (i < len) {
+                // 将新字符数组初始化为和原始字符串相同的长度
                 char buf[] = new char[len];
+                // 将新字符数组初始化为与原始字符串相同的内容
                 for (int j = 0; j < i; j++) {
                     buf[j] = val[j];
                 }
+                /* 
+                使用一个循环来遍历原始字符串中的字符，并根据是否需要替换来填充新字符数组。
+                如果遇到 oldChar，则插入 newChar；否则，插入原始字符
+                 */
                 while (i < len) {
                     char c = val[i];
                     buf[i] = (c == oldChar) ? newChar : c;
@@ -2064,17 +2060,7 @@ public final class String
     }
 
     /**
-     * Tells whether or not this string matches the given <a
-     * href="../util/regex/Pattern.html#sum">regular expression</a>.
-     *
-     * <p> An invocation of this method of the form
-     * <i>str</i>{@code .matches(}<i>regex</i>{@code )} yields exactly the
-     * same result as the expression
-     *
-     * <blockquote>
-     * {@link java.util.regex.Pattern}.{@link java.util.regex.Pattern#matches(String,CharSequence)
-     * matches(<i>regex</i>, <i>str</i>)}
-     * </blockquote>
+     * 判断字符串是否与给定的正则表达式匹配
      *
      * @param   regex
      *          the regular expression to which this string is to be matched
@@ -2097,6 +2083,7 @@ public final class String
     /**
      * Returns true if and only if this string contains the specified
      * sequence of char values.
+     * 判断字符串是否包含目标字符串
      *
      * @param s the sequence to search for
      * @return true if this string contains {@code s}, false otherwise
@@ -2107,30 +2094,7 @@ public final class String
     }
 
     /**
-     * Replaces the first substring of this string that matches the given <a
-     * href="../util/regex/Pattern.html#sum">regular expression</a> with the
-     * given replacement.
-     *
-     * <p> An invocation of this method of the form
-     * <i>str</i>{@code .replaceFirst(}<i>regex</i>{@code ,} <i>repl</i>{@code )}
-     * yields exactly the same result as the expression
-     *
-     * <blockquote>
-     * <code>
-     * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
-     * java.util.regex.Pattern#matcher(java.lang.CharSequence) matcher}(<i>str</i>).{@link
-     * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
-     * </code>
-     * </blockquote>
-     *
-     *<p>
-     * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
-     * replacement string may cause the results to be different than if it were
-     * being treated as a literal replacement string; see
-     * {@link java.util.regex.Matcher#replaceFirst}.
-     * Use {@link java.util.regex.Matcher#quoteReplacement} to suppress the special
-     * meaning of these characters, if desired.
+     * 替换字符串中的第一个匹配给定正则表达式的子串
      *
      * @param   regex
      *          the regular expression to which this string is to be matched
@@ -2152,30 +2116,7 @@ public final class String
     }
 
     /**
-     * Replaces each substring of this string that matches the given <a
-     * href="../util/regex/Pattern.html#sum">regular expression</a> with the
-     * given replacement.
-     *
-     * <p> An invocation of this method of the form
-     * <i>str</i>{@code .replaceAll(}<i>regex</i>{@code ,} <i>repl</i>{@code )}
-     * yields exactly the same result as the expression
-     *
-     * <blockquote>
-     * <code>
-     * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
-     * java.util.regex.Pattern#matcher(java.lang.CharSequence) matcher}(<i>str</i>).{@link
-     * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
-     * </code>
-     * </blockquote>
-     *
-     *<p>
-     * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
-     * replacement string may cause the results to be different than if it were
-     * being treated as a literal replacement string; see
-     * {@link java.util.regex.Matcher#replaceAll Matcher.replaceAll}.
-     * Use {@link java.util.regex.Matcher#quoteReplacement} to suppress the special
-     * meaning of these characters, if desired.
+     * 替换字符串中所有与给定正则表达式匹配的子串
      *
      * @param   regex
      *          the regular expression to which this string is to be matched
@@ -2197,11 +2138,7 @@ public final class String
     }
 
     /**
-     * Replaces each substring of this string that matches the literal target
-     * sequence with the specified literal replacement sequence. The
-     * replacement proceeds from the beginning of the string to the end, for
-     * example, replacing "aa" with "b" in the string "aaa" will result in
-     * "ba" rather than "ab".
+     * 替换字符串中所有与给定目标序列匹配的子串
      *
      * @param  target The sequence of char values to be replaced
      * @param  replacement The replacement sequence of char values
@@ -2301,10 +2238,13 @@ public final class String
      */
     public String[] split(String regex, int limit) {
         /* fastpath if the regex is a
+        快捷路径
          (1)one-char String and this character is not one of the
             RegEx's meta characters ".$|()[{^?*+\\", or
-         (2)two-char String and the first char is the backslash and
+            regex只包含一个字符串，而这个字符不是正则表达式的元字符，例如：".$|()[{^?*+\\"
+         (2)tcwo-har String and the first char is the backslash and
             the second is not the ascii digit or ascii letter.
+            regex是一个双字符的字符串，其中第一个字符是反斜杠\，而第二个字符既不是ASCII数字也不是ASCII字母
          */
         char ch = 0;
         if (((regex.value.length == 1 &&
@@ -2317,32 +2257,48 @@ public final class String
             (ch < Character.MIN_HIGH_SURROGATE ||
              ch > Character.MAX_LOW_SURROGATE))
         {
+            // fastpath
+
+            // 当前索引位置
             int off = 0;
+            // 下一个索引位置
             int next = 0;
+            // 是否有限制分割数量  
             boolean limited = limit > 0;
+            // 保存分割后的字符串列表
             ArrayList<String> list = new ArrayList<>();
-            while ((next = indexOf(ch, off)) != -1) {
+            // 循环查找匹配的位置
+            while ((next = indexOf(ch, off)) != -1) { 
                 if (!limited || list.size() < limit - 1) {
+                    // 如果未达到限制数量或还未达到最大分割数
                     list.add(substring(off, next));
                     off = next + 1;
                 } else {    // last one
                     //assert (list.size() == limit - 1);
+                    // 达到限制数量，处理最后一个匹配部分 
+                    // 将剩余部分添加到列表中
                     list.add(substring(off, value.length));
                     off = value.length;
                     break;
                 }
             }
             // If no match was found, return this
+            // 如果未找到匹配，返回原字符串数组（即长度为1的数组）
             if (off == 0)
                 return new String[]{this};
 
             // Add remaining segment
+            // 添加剩余部分到列表中（如果存在）  
             if (!limited || list.size() < limit)
                 list.add(substring(off, value.length));
 
             // Construct result
+            // 构造最终的字符串数组并返回  
             int resultSize = list.size();
+
+            // 如果限制数量为0
             if (limit == 0) {
+                // 循环移除最后一个元素长度为0，则减少resultSize的值
                 while (resultSize > 0 && list.get(resultSize - 1).length() == 0) {
                     resultSize--;
                 }
@@ -2350,6 +2306,7 @@ public final class String
             String[] result = new String[resultSize];
             return list.subList(0, resultSize).toArray(result);
         }
+        // 使用正则匹配
         return Pattern.compile(regex).split(this, limit);
     }
 
