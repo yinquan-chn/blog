@@ -2151,31 +2151,7 @@ public final class String
     }
 
     /**
-     * Splits this string around matches of the given
-     * <a href="../util/regex/Pattern.html#sum">regular expression</a>.
-     *
-     * <p> The array returned by this method contains each substring of this
-     * string that is terminated by another substring that matches the given
-     * expression or is terminated by the end of the string.  The substrings in
-     * the array are in the order in which they occur in this string.  If the
-     * expression does not match any part of the input then the resulting array
-     * has just one element, namely this string.
-     *
-     * <p> When there is a positive-width match at the beginning of this
-     * string then an empty leading substring is included at the beginning
-     * of the resulting array. A zero-width match at the beginning however
-     * never produces such empty leading substring.
-     *
-     * <p> The {@code limit} parameter controls the number of times the
-     * pattern is applied and therefore affects the length of the resulting
-     * array.  If the limit <i>n</i> is greater than zero then the pattern
-     * will be applied at most <i>n</i>&nbsp;-&nbsp;1 times, the array's
-     * length will be no greater than <i>n</i>, and the array's last entry
-     * will contain all input beyond the last matched delimiter.  If <i>n</i>
-     * is non-positive then the pattern will be applied as many times as
-     * possible and the array can have any length.  If <i>n</i> is zero then
-     * the pattern will be applied as many times as possible, the array can
-     * have any length, and trailing empty strings will be discarded.
+     * 将字符串按照指定的正则表达式进行分割
      *
      * <p> The string {@code "boo:and:foo"}, for example, yields the
      * following results with these parameters:
@@ -2311,13 +2287,7 @@ public final class String
     }
 
     /**
-     * Splits this string around matches of the given <a
-     * href="../util/regex/Pattern.html#sum">regular expression</a>.
-     *
-     * <p> This method works as if by invoking the two-argument {@link
-     * #split(String, int) split} method with the given expression and a limit
-     * argument of zero.  Trailing empty strings are therefore not included in
-     * the resulting array.
+     * 将字符串按照指定的正则表达式进行分割
      *
      * <p> The string {@code "boo:and:foo"}, for example, yields the following
      * results with these expressions:
@@ -2353,9 +2323,7 @@ public final class String
     }
 
     /**
-     * Returns a new String composed of copies of the
-     * {@code CharSequence elements} joined together with a copy of
-     * the specified {@code delimiter}.
+     * 用于将多个CharSequence（字符序列）对象以指定的分隔符连接成一个新的字符串
      *
      * <blockquote>For example,
      * <pre>{@code
@@ -2365,8 +2333,8 @@ public final class String
      *
      * Note that if an element is null, then {@code "null"} is added.
      *
-     * @param  delimiter the delimiter that separates each element
-     * @param  elements the elements to join together.
+     * @param  delimiter the delimiter that separates each element,分割每个元素的分隔符
+     * @param  elements the elements to join together.要连接在一起的元素
      *
      * @return a new {@code String} that is composed of the {@code elements}
      *         separated by the {@code delimiter}
@@ -2378,9 +2346,11 @@ public final class String
      * @since 1.8
      */
     public static String join(CharSequence delimiter, CharSequence... elements) {
+        // 检查非空
         Objects.requireNonNull(delimiter);
         Objects.requireNonNull(elements);
         // Number of elements not likely worth Arrays.stream overhead.
+        // 使用StringJoiner
         StringJoiner joiner = new StringJoiner(delimiter);
         for (CharSequence cs: elements) {
             joiner.add(cs);
@@ -2389,9 +2359,7 @@ public final class String
     }
 
     /**
-     * Returns a new {@code String} composed of copies of the
-     * {@code CharSequence elements} joined together with a copy of the
-     * specified {@code delimiter}.
+     * 用于将多个CharSequence（字符序列）对象以指定的分隔符连接成一个新的字符串
      *
      * <blockquote>For example,
      * <pre>{@code
@@ -2437,11 +2405,14 @@ public final class String
     }
 
     /**
-     * Converts all of the characters in this {@code String} to lower
-     * case using the rules of the given {@code Locale}.  Case mapping is based
-     * on the Unicode Standard version specified by the {@link java.lang.Character Character}
-     * class. Since case mappings are not always 1:1 char mappings, the resulting
-     * {@code String} may be a different length than the original {@code String}.
+     * Converts all of the characters in this {@code String} to lower case using the rules of the given {@code Locale}.
+     * 使用locale规则将字符串内容变成小写
+     * 
+     * Case mapping is based on the Unicode Standard version specified by the {@link java.lang.Character Character} class.
+     * 大小写映射基于{@link java.lang.Character Character}类指定的Unicode标准版本
+     * 
+     * Since case mappings are not always 1:1 char mappings, the resulting {@code String} may be a different length than the original {@code String}.
+     * 由于大小写的映射不总是1:1的字符映射，因此生成的String可能与原始的String长度不同
      * <p>
      * Examples of lowercase  mappings are in the following table:
      * <table border="1" summary="Lowercase mapping examples showing language code of locale, upper case, lower case, and description">
@@ -2497,8 +2468,10 @@ public final class String
         final int len = value.length;
 
         /* Now check if there are any characters that need to be changed. */
+        // 检查字符串中是否有任何需要改变的字符
         scan: {
             for (firstUpper = 0 ; firstUpper < len; ) {
+                // 获取当前的字符
                 char c = value[firstUpper];
                 if ((c >= Character.MIN_HIGH_SURROGATE)
                         && (c <= Character.MAX_HIGH_SURROGATE)) {
@@ -2508,12 +2481,16 @@ public final class String
                     }
                     firstUpper += Character.charCount(supplChar);
                 } else {
+                    // 检查当前字符是否不等于其小写形式
                     if (c != Character.toLowerCase(c)) {
+                        // 不等于，直接返回
                         break scan;
                     }
+                    // 如果当前字符等于其小写形式，那么它只增加firstUpper的值以继续检查下一个字符
                     firstUpper++;
                 }
             }
+            // 不存在这返回自身
             return this;
         }
 
