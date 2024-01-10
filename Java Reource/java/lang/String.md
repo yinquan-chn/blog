@@ -2494,14 +2494,18 @@ public final class String
             return this;
         }
 
+        // 结果数组
         char[] result = new char[len];
+        // 偏移量
         int resultOffset = 0;  /* result may grow, so i+resultOffset
                                 * is the write location in result */
 
         /* Just copy the first few lowerCase characters. */
+        // 复制前面的小写字符
         System.arraycopy(value, 0, result, 0, firstUpper);
 
         String lang = locale.getLanguage();
+        // tr 代表土耳其语，az 代表阿塞拜疆语，lt 代表立陶宛语
         boolean localeDependent =
                 (lang == "tr" || lang == "az" || lang == "lt");
         char[] lowerCharArray;
@@ -2520,6 +2524,8 @@ public final class String
             if (localeDependent ||
                 srcChar == '\u03A3' || // GREEK CAPITAL LETTER SIGMA
                 srcChar == '\u0130') { // LATIN CAPITAL LETTER I WITH DOT ABOVE
+                // tr 代表土耳其语，az 代表阿塞拜疆语，lt 代表立陶宛语
+                // 当前字符是希腊大写字母sigma (\u03A3) 或带点的大写字母I (\u0130)
                 lowerChar = ConditionalSpecialCasing.toLowerCaseEx(this, i, locale);
             } else {
                 lowerChar = Character.toLowerCase(srcChar);
@@ -2527,9 +2533,11 @@ public final class String
             if ((lowerChar == Character.ERROR)
                     || (lowerChar >= Character.MIN_SUPPLEMENTARY_CODE_POINT)) {
                 if (lowerChar == Character.ERROR) {
+                    // 如果转换后的字符是错误
                     lowerCharArray =
                             ConditionalSpecialCasing.toLowerCaseCharArray(this, i, locale);
                 } else if (srcCount == 2) {
+                    // 如果转换后的字符是一个增补字符
                     resultOffset += Character.toChars(lowerChar, result, i + resultOffset) - srcCount;
                     continue;
                 } else {
@@ -2537,6 +2545,7 @@ public final class String
                 }
 
                 /* Grow result if needed */
+                // 大小写的映射不总是1:1的字符映射,可能存在扩展的情况
                 int mapLen = lowerCharArray.length;
                 if (mapLen > srcCount) {
                     char[] result2 = new char[result.length + mapLen - srcCount];
@@ -2548,6 +2557,7 @@ public final class String
                 }
                 resultOffset += (mapLen - srcCount);
             } else {
+                // 如果转换后的字符不是增补字符，那么它会被直接复制到结果数组中
                 result[i + resultOffset] = (char)lowerChar;
             }
         }
@@ -2555,21 +2565,7 @@ public final class String
     }
 
     /**
-     * Converts all of the characters in this {@code String} to lower
-     * case using the rules of the default locale. This is equivalent to calling
-     * {@code toLowerCase(Locale.getDefault())}.
-     * <p>
-     * <b>Note:</b> This method is locale sensitive, and may produce unexpected
-     * results if used for strings that are intended to be interpreted locale
-     * independently.
-     * Examples are programming language identifiers, protocol keys, and HTML
-     * tags.
-     * For instance, {@code "TITLE".toLowerCase()} in a Turkish locale
-     * returns {@code "t\u005Cu0131tle"}, where '\u005Cu0131' is the
-     * LATIN SMALL LETTER DOTLESS I character.
-     * To obtain correct results for locale insensitive strings, use
-     * {@code toLowerCase(Locale.ROOT)}.
-     * <p>
+     * 使用默认的区域设置（locale）将字符串中的所有字符转换为小写，不推荐使用
      * @return  the {@code String}, converted to lowercase.
      * @see     java.lang.String#toLowerCase(Locale)
      */
@@ -2578,9 +2574,10 @@ public final class String
     }
 
     /**
-     * Converts all of the characters in this {@code String} to upper
-     * case using the rules of the given {@code Locale}. Case mapping is based
-     * on the Unicode Standard version specified by the {@link java.lang.Character Character}
+     * Converts all of the characters in this {@code String} to upper case using the rules of the given {@code Locale}. 
+     * 使用locale规则将字符串内容变成大写
+     * 
+     * Case mapping is based on the Unicode Standard version specified by the {@link java.lang.Character Character}
      * class. Since case mappings are not always 1:1 char mappings, the resulting
      * {@code String} may be a different length than the original {@code String}.
      * <p>
@@ -2718,21 +2715,7 @@ public final class String
     }
 
     /**
-     * Converts all of the characters in this {@code String} to upper
-     * case using the rules of the default locale. This method is equivalent to
-     * {@code toUpperCase(Locale.getDefault())}.
-     * <p>
-     * <b>Note:</b> This method is locale sensitive, and may produce unexpected
-     * results if used for strings that are intended to be interpreted locale
-     * independently.
-     * Examples are programming language identifiers, protocol keys, and HTML
-     * tags.
-     * For instance, {@code "title".toUpperCase()} in a Turkish locale
-     * returns {@code "T\u005Cu0130TLE"}, where '\u005Cu0130' is the
-     * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
-     * To obtain correct results for locale insensitive strings, use
-     * {@code toUpperCase(Locale.ROOT)}.
-     * <p>
+     * 使用默认的区域设置（locale）将字符串中的所有字符转换为大写，不推荐使用
      * @return  the {@code String}, converted to uppercase.
      * @see     java.lang.String#toUpperCase(Locale)
      */
@@ -2741,31 +2724,7 @@ public final class String
     }
 
     /**
-     * Returns a string whose value is this string, with any leading and trailing
-     * whitespace removed.
-     * <p>
-     * If this {@code String} object represents an empty character
-     * sequence, or the first and last characters of character sequence
-     * represented by this {@code String} object both have codes
-     * greater than {@code '\u005Cu0020'} (the space character), then a
-     * reference to this {@code String} object is returned.
-     * <p>
-     * Otherwise, if there is no character with a code greater than
-     * {@code '\u005Cu0020'} in the string, then a
-     * {@code String} object representing an empty string is
-     * returned.
-     * <p>
-     * Otherwise, let <i>k</i> be the index of the first character in the
-     * string whose code is greater than {@code '\u005Cu0020'}, and let
-     * <i>m</i> be the index of the last character in the string whose code
-     * is greater than {@code '\u005Cu0020'}. A {@code String}
-     * object is returned, representing the substring of this string that
-     * begins with the character at index <i>k</i> and ends with the
-     * character at index <i>m</i>-that is, the result of
-     * {@code this.substring(k, m + 1)}.
-     * <p>
-     * This method may be used to trim whitespace (as defined above) from
-     * the beginning and end of a string.
+     * 去除开头和结尾的空白字符
      *
      * @return  A string whose value is this string, with any leading and trailing white
      *          space removed, or this string if it has no leading or
@@ -2795,7 +2754,7 @@ public final class String
     }
 
     /**
-     * Converts this string to a new character array.
+     * 将此字符串转换为新的字符数组。
      *
      * @return  a newly allocated character array whose length is the length
      *          of this string and whose contents are initialized to contain
@@ -2889,7 +2848,7 @@ public final class String
     }
 
     /**
-     * Returns the string representation of the {@code Object} argument.
+     * 返回｛@code Object｝参数的字符串表示形式。
      *
      * @param   obj   an {@code Object}.
      * @return  if the argument is {@code null}, then a string equal to
@@ -2902,10 +2861,7 @@ public final class String
     }
 
     /**
-     * Returns the string representation of the {@code char} array
-     * argument. The contents of the character array are copied; subsequent
-     * modification of the character array does not affect the returned
-     * string.
+     * 返回｛@code char｝数组的字符串表示形式
      *
      * @param   data     the character array.
      * @return  a {@code String} that contains the characters of the
@@ -3068,6 +3024,7 @@ public final class String
      * interned. String literals are defined in section 3.10.5 of the
      * <cite>The Java&trade; Language Specification</cite>.
      *
+     * intern() 方法用于将字符串添加到字符串池中，并返回字符串的引用。如果字符串已经存在于池中，则返回对该字符串的引用；否则，将新字符串添加到池中并返回它的引用。这可以用于减少字符串对象的创建，从而提高性能 
      * @return  a string that has the same contents as this string, but is
      *          guaranteed to be from a pool of unique strings.
      */
