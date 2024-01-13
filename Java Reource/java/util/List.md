@@ -1,43 +1,24 @@
 ```java
-/*
- * Copyright (c) 1997, 2014, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
-package java.util;
-
-import java.util.function.UnaryOperator;
-
 /**
- * An ordered collection (also known as a <i>sequence</i>).  The user of this
- * interface has precise control over where in the list each element is
- * inserted.  The user can access elements by their integer index (position in
- * the list), and search for elements in the list.<p>
- *
- * Unlike sets, lists typically allow duplicate elements.  More formally,
- * lists typically allow pairs of elements <tt>e1</tt> and <tt>e2</tt>
- * such that <tt>e1.equals(e2)</tt>, and they typically allow multiple
- * null elements if they allow null elements at all.  It is not inconceivable
+ * An ordered collection (also known as a <i>sequence</i>).  
+ * 一个有序的集合
+ * The user of this interface has precise control over where in the list each element is inserted.  
+ * 该这个接口可以精确控制每个元素在列表中的插入位置
+ * 
+ * The user can access elements by their integer index (position in the list), and search for elements in the list.<p>
+ * 用户可以通过索引位置获取list中的元素
+ * 
+ * Unlike sets, lists typically allow duplicate elements.  
+ * 与sets不同，lists可以放入重复的元素
+ * More formally, lists typically allow pairs of elements 
+ * 更正式地说，列表通常允许成对的元素
+ * <tt>e1</tt> and <tt>e2</tt> such that <tt>e1.equals(e2)</tt>, 
+ * and they typically allow multiple null elements if they allow null elements at all.  
+ * 并且它们通常允许多个
+
+*null元素，如果它们允许null元素
+ * 
+ * It is not inconceivable
  * that someone might wish to implement a list that prohibits duplicates, by
  * throwing runtime exceptions when the user attempts to insert them, but we
  * expect this usage to be rare.<p>
