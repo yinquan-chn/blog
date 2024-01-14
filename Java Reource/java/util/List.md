@@ -14,64 +14,82 @@
  * 更正式地说，列表通常允许成对的元素
  * <tt>e1</tt> and <tt>e2</tt> such that <tt>e1.equals(e2)</tt>, 
  * and they typically allow multiple null elements if they allow null elements at all.  
- * 并且它们通常允许多个
-
-*null元素，如果它们允许null元素
+ * 并且它们通常允许多个null元素，如果它们允许null元素
  * 
- * It is not inconceivable
- * that someone might wish to implement a list that prohibits duplicates, by
- * throwing runtime exceptions when the user attempts to insert them, but we
- * expect this usage to be rare.<p>
+ * It is not inconceivable that someone might wish to implement a list that prohibits duplicates, by
+ * throwing runtime exceptions when the user attempts to insert them, but we expect this usage to be rare.<p>
  *
  * The <tt>List</tt> interface places additional stipulations, beyond those
  * specified in the <tt>Collection</tt> interface, on the contracts of the
  * <tt>iterator</tt>, <tt>add</tt>, <tt>remove</tt>, <tt>equals</tt>, and
- * <tt>hashCode</tt> methods.  Declarations for other inherited methods are
- * also included here for convenience.<p>
- *
- * The <tt>List</tt> interface provides four methods for positional (indexed)
- * access to list elements.  Lists (like Java arrays) are zero based.  Note
+ * <tt>hashCode</tt> methods.  
+ * List接口在Collection接口规定的基础上，对iterator、add、remove、equals和hashCode方法添加了额外的实现
+ * 
+ * Declarations for other inherited methods are also included here for convenience.<p>
+ * 为了方便起见，这里还包含了其他继承方法的声明。
+ * 
+ * The <tt>List</tt> interface provides four methods for positional (indexed) access to list elements.  
+ * List 提供了四种通过index进行元素访问的方法
+ * 
+ * Lists (like Java arrays) are zero based. 
+ * List是从0开始索引
+ * 
+ * Note
  * that these operations may execute in time proportional to the index value
- * for some implementations (the <tt>LinkedList</tt> class, for
- * example). Thus, iterating over the elements in a list is typically
- * preferable to indexing through it if the caller does not know the
- * implementation.<p>
+ * for some implementations (the <tt>LinkedList</tt> class, for example). 
+ * 这些操作可能执行的时间与索引值成正比：这意味着对于某些实现（例如LinkedList类），访问列表中特定位置的元素（通过索引）的时间可能随着索引值的增加而增加。
+ * 这是因为某些数据结构（如链表）访问中间元素可能需要更多的时间，而数组或某些其他数据结构则可以在恒定时间内访问任意元素
+ * 
+ * Thus, iterating over the elements in a list is typically preferable to indexing through it if the caller does not know the implementation.
+ * 因此，通常更喜欢遍历列表元素而不是通过索引访问：这是基于上述性能考虑的建议。
+ * 如果调用者不知道列表的具体实现类型，遍历列表元素通常是一个更好的选择，因为它避免了与索引值相关的性能问题。
  *
- * The <tt>List</tt> interface provides a special iterator, called a
- * <tt>ListIterator</tt>, that allows element insertion and replacement, and
- * bidirectional access in addition to the normal operations that the
+ * The <tt>List</tt> interface provides a special iterator, called a <tt>ListIterator</tt>, 
+ * that allows element insertion and replacement, and bidirectional access in addition to the normal operations that the
  * <tt>Iterator</tt> interface provides.  A method is provided to obtain a
  * list iterator that starts at a specified position in the list.<p>
+ * List接口提供的特殊迭代器，称为ListIterator。与标准的Iterator接口相比，ListIterator允许在列表中插入和替换元素，并提供双向访问。
+ * 这意味着你可以从列表的前面和后面遍历元素。此外，还提供了一个方法来获取从列表中特定位置开始迭代的ListIterator
  *
- * The <tt>List</tt> interface provides two methods to search for a specified
- * object.  From a performance standpoint, these methods should be used with
- * caution.  In many implementations they will perform costly linear
- * searches.<p>
+ * The <tt>List</tt> interface provides two methods to search for a specified object.  
+ * From a performance standpoint, these methods should be used with caution. 
+ * In many implementations they will perform costly linear searches.<p>
+ * 尽管List接口提供了搜索方法，但在某些实现中，这些方法可能会导致较低的性能，因为它们采用线性搜索方式。在处理大量数据时，使用其他更高效的搜索算法或数据结构可能更为合适。
  *
  * The <tt>List</tt> interface provides two methods to efficiently insert and
  * remove multiple elements at an arbitrary point in the list.<p>
+ * <tt>List</tt>接口提供了两种方法来有效地插入和删除列表中任意点的多个元素<p>
  *
  * Note: While it is permissible for lists to contain themselves as elements,
  * extreme caution is advised: the <tt>equals</tt> and <tt>hashCode</tt>
  * methods are no longer well defined on such a list.
+ * 虽然允许列表将其自身作为元素包含，但应极其谨慎行事。对于这样一个列表，equals和hashCode方法不再有明确定义
  *
- * <p>Some list implementations have restrictions on the elements that
- * they may contain.  For example, some implementations prohibit null elements,
- * and some have restrictions on the types of their elements.  Attempting to
- * add an ineligible element throws an unchecked exception, typically
- * <tt>NullPointerException</tt> or <tt>ClassCastException</tt>.  Attempting
- * to query the presence of an ineligible element may throw an exception,
- * or it may simply return false; some implementations will exhibit the former
- * behavior and some will exhibit the latter.  More generally, attempting an
- * operation on an ineligible element whose completion would not result in
+ * <p>Some list implementations have restrictions on the elements that they may contain. 
+ * 一些列表实现对它们可能包含的元素有限制。
+ * 
+ * For example, some implementations prohibit null elements, and some have restrictions on the types of their elements.
+ * 例如，有些实现禁止null元素，有些实现对其元素的类型有限制。
+ * 
+ * Attempting to add an ineligible element throws an unchecked exception, typically
+ * <tt>NullPointerException</tt> or <tt>ClassCastException</tt>.  
+ * 尝试添加不合格的元素会抛出一个未检查的异常，通常是NullPointerException或ClassCastException
+ * 
+ * Attempting to query the presence of an ineligible element may throw an exception, or it may simply return false; 
+ * 尝试查询不合格元素的存在的行为可能会抛出异常，或者简单地返回false；
+ * 
+ * some implementations will exhibit the former behavior and some will exhibit the latter.  
+ * 某些实现会表现出前一种行为，而其他实现则表现出后一种行为
+ * 
+ * More generally, attempting an operation on an ineligible element whose completion would not result in
  * the insertion of an ineligible element into the list may throw an
  * exception or it may succeed, at the option of the implementation.
- * Such exceptions are marked as "optional" in the specification for this
- * interface.
+ * 更一般地说，对不合格元素的尝试操作，如果其完成不会导致不合格元素被插入到列表中，可能会抛出异常，也可能会成功，这取决于实现的选择。
+ * 
+ * Such exceptions are marked as "optional" in the specification for this interface.
+ * 此类异常在接口规范中被标记为“可选”。
  *
- * <p>This interface is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
+
  *
  * @param <E> the type of elements in this list
  *
@@ -91,12 +109,15 @@
  */
 
 public interface List<E> extends Collection<E> {
-    // Query Operations
+    // 查询操作
 
     /**
-     * Returns the number of elements in this list.  If this list contains
-     * more than <tt>Integer.MAX_VALUE</tt> elements, returns
+     * Returns the number of elements in this list.  
+     * 返回List中的元素数量
+     * 
+     * If this list contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
      * <tt>Integer.MAX_VALUE</tt>.
+     * 如果元素数量大于Integer最大值，返回Integer最大值
      *
      * @return the number of elements in this list
      */
@@ -104,6 +125,7 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Returns <tt>true</tt> if this list contains no elements.
+     * 当List中没有元素时，返回true
      *
      * @return <tt>true</tt> if this list contains no elements
      */
@@ -111,9 +133,12 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Returns <tt>true</tt> if this list contains the specified element.
-     * More formally, returns <tt>true</tt> if and only if this list contains
-     * at least one element <tt>e</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
+     * 如果List存在元素o，则返回true
+     * 
+     * More formally, returns <tt>true</tt> if and only if this list contains at least one element <tt>e</tt> 
+     * such that
+     * 通过下面的表达式来计算是否相等
+     * <tt>(o==null ? e==null : o.equals(e))</tt>.
      *
      * @param o element whose presence in this list is to be tested
      * @return <tt>true</tt> if this list contains the specified element
@@ -128,6 +153,7 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Returns an iterator over the elements in this list in proper sequence.
+     * 按正确的顺序在此列表中的元素上返回迭代器。
      *
      * @return an iterator over the elements in this list in proper sequence
      */
@@ -136,14 +162,17 @@ public interface List<E> extends Collection<E> {
     /**
      * Returns an array containing all of the elements in this list in proper
      * sequence (from first to last element).
+     * 返回一个数组，该数组包含此列表中的所有元素序列（从第一个元素到最后一个元素）。
      *
      * <p>The returned array will be "safe" in that no references to it are
      * maintained by this list.  (In other words, this method must
      * allocate a new array even if this list is backed by an array).
      * The caller is thus free to modify the returned array.
+     * <p>返回的数组是“安全的”，因为没有对它的引用由该列表维护。（换句话说，此方法必须即使该列表由数组支持，也要分配新的数组）.因此，调用者可以自由地修改返回的数组。
      *
      * <p>This method acts as bridge between array-based and collection-based
      * APIs.
+     * 此方法充当基于数组和基于集合之间的桥梁API。
      *
      * @return an array containing all of the elements in this list in proper
      *         sequence
