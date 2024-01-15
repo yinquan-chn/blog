@@ -1,3 +1,13 @@
+# List依赖
+List的依赖关系简单版，没有表明实现，因为目前只关注List的方法和源码，List的不同实现有 再做不同的解析
+
+```mermaid
+graph BT
+    List --> Collection --> Iterable
+
+```
+
+# List源码
 ```java
 /**
  * An ordered collection (also known as a <i>sequence</i>).  
@@ -12,23 +22,23 @@
  * 与sets不同，lists可以放入重复的元素
  * More formally, lists typically allow pairs of elements 
  * 更正式地说，列表通常允许成对的元素
- * <tt>e1</tt> and <tt>e2</tt> such that <tt>e1.equals(e2)</tt>, 
+ * e1 and e2 such that e1.equals(e2), 
  * and they typically allow multiple null elements if they allow null elements at all.  
  * 并且它们通常允许多个null元素，如果它们允许null元素
  * 
  * It is not inconceivable that someone might wish to implement a list that prohibits duplicates, by
  * throwing runtime exceptions when the user attempts to insert them, but we expect this usage to be rare.<p>
  *
- * The <tt>List</tt> interface places additional stipulations, beyond those
- * specified in the <tt>Collection</tt> interface, on the contracts of the
- * <tt>iterator</tt>, <tt>add</tt>, <tt>remove</tt>, <tt>equals</tt>, and
- * <tt>hashCode</tt> methods.  
+ * The List interface places additional stipulations, beyond those
+ * specified in the Collection interface, on the contracts of the
+ * iterator, add, remove, equals, and
+ * hashCode methods.  
  * List接口在Collection接口规定的基础上，对iterator、add、remove、equals和hashCode方法添加了额外的实现
  * 
  * Declarations for other inherited methods are also included here for convenience.<p>
  * 为了方便起见，这里还包含了其他继承方法的声明。
  * 
- * The <tt>List</tt> interface provides four methods for positional (indexed) access to list elements.  
+ * The List interface provides four methods for positional (indexed) access to list elements.  
  * List 提供了四种通过index进行元素访问的方法
  * 
  * Lists (like Java arrays) are zero based. 
@@ -36,7 +46,7 @@
  * 
  * Note
  * that these operations may execute in time proportional to the index value
- * for some implementations (the <tt>LinkedList</tt> class, for example). 
+ * for some implementations (the LinkedList class, for example). 
  * 这些操作可能执行的时间与索引值成正比：这意味着对于某些实现（例如LinkedList类），访问列表中特定位置的元素（通过索引）的时间可能随着索引值的增加而增加。
  * 这是因为某些数据结构（如链表）访问中间元素可能需要更多的时间，而数组或某些其他数据结构则可以在恒定时间内访问任意元素
  * 
@@ -44,24 +54,24 @@
  * 因此，通常更喜欢遍历列表元素而不是通过索引访问：这是基于上述性能考虑的建议。
  * 如果调用者不知道列表的具体实现类型，遍历列表元素通常是一个更好的选择，因为它避免了与索引值相关的性能问题。
  *
- * The <tt>List</tt> interface provides a special iterator, called a <tt>ListIterator</tt>, 
+ * The List interface provides a special iterator, called a ListIterator, 
  * that allows element insertion and replacement, and bidirectional access in addition to the normal operations that the
- * <tt>Iterator</tt> interface provides.  A method is provided to obtain a
+ * Iterator interface provides.  A method is provided to obtain a
  * list iterator that starts at a specified position in the list.<p>
  * List接口提供的特殊迭代器，称为ListIterator。与标准的Iterator接口相比，ListIterator允许在列表中插入和替换元素，并提供双向访问。
  * 这意味着你可以从列表的前面和后面遍历元素。此外，还提供了一个方法来获取从列表中特定位置开始迭代的ListIterator
  *
- * The <tt>List</tt> interface provides two methods to search for a specified object.  
+ * The List interface provides two methods to search for a specified object.  
  * From a performance standpoint, these methods should be used with caution. 
  * In many implementations they will perform costly linear searches.<p>
  * 尽管List接口提供了搜索方法，但在某些实现中，这些方法可能会导致较低的性能，因为它们采用线性搜索方式。在处理大量数据时，使用其他更高效的搜索算法或数据结构可能更为合适。
  *
- * The <tt>List</tt> interface provides two methods to efficiently insert and
+ * The List interface provides two methods to efficiently insert and
  * remove multiple elements at an arbitrary point in the list.<p>
- * <tt>List</tt>接口提供了两种方法来有效地插入和删除列表中任意点的多个元素<p>
+ * List接口提供了两种方法来有效地插入和删除列表中任意点的多个元素<p>
  *
  * Note: While it is permissible for lists to contain themselves as elements,
- * extreme caution is advised: the <tt>equals</tt> and <tt>hashCode</tt>
+ * extreme caution is advised: the equals and hashCode
  * methods are no longer well defined on such a list.
  * 虽然允许列表将其自身作为元素包含，但应极其谨慎行事。对于这样一个列表，equals和hashCode方法不再有明确定义
  *
@@ -72,7 +82,7 @@
  * 例如，有些实现禁止null元素，有些实现对其元素的类型有限制。
  * 
  * Attempting to add an ineligible element throws an unchecked exception, typically
- * <tt>NullPointerException</tt> or <tt>ClassCastException</tt>.  
+ * NullPointerException or ClassCastException.  
  * 尝试添加不合格的元素会抛出一个未检查的异常，通常是NullPointerException或ClassCastException
  * 
  * Attempting to query the presence of an ineligible element may throw an exception, or it may simply return false; 
@@ -115,8 +125,8 @@ public interface List<E> extends Collection<E> {
      * Returns the number of elements in this list.  
      * 返回List中的元素数量
      * 
-     * If this list contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
-     * <tt>Integer.MAX_VALUE</tt>.
+     * If this list contains more than Integer.MAX_VALUE elements, returns
+     * Integer.MAX_VALUE.
      * 如果元素数量大于Integer最大值，返回Integer最大值
      *
      * @return the number of elements in this list
@@ -124,24 +134,24 @@ public interface List<E> extends Collection<E> {
     int size();
 
     /**
-     * Returns <tt>true</tt> if this list contains no elements.
+     * Returns true if this list contains no elements.
      * 当List中没有元素时，返回true
      *
-     * @return <tt>true</tt> if this list contains no elements
+     * @return true if this list contains no elements
      */
     boolean isEmpty();
 
     /**
-     * Returns <tt>true</tt> if this list contains the specified element.
+     * Returns true if this list contains the specified element.
      * 如果List存在元素o，则返回true
      * 
-     * More formally, returns <tt>true</tt> if and only if this list contains at least one element <tt>e</tt> 
+     * More formally, returns true if and only if this list contains at least one element e 
      * such that
      * 通过下面的表达式来计算是否相等
-     * <tt>(o==null ? e==null : o.equals(e))</tt>.
+     * (o==null ? e==null : o.equals(e)).
      *
      * @param o element whose presence in this list is to be tested
-     * @return <tt>true</tt> if this list contains the specified element
+     * @return true if this list contains the specified element
      * @throws ClassCastException if the type of the specified element
      *         is incompatible with this list
      * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -160,8 +170,7 @@ public interface List<E> extends Collection<E> {
     Iterator<E> iterator();
 
     /**
-     * Returns an array containing all of the elements in this list in proper
-     * sequence (from first to last element).
+     * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
      * 返回一个数组，该数组包含此列表中的所有元素序列（从第一个元素到最后一个元素）。
      *
      * <p>The returned array will be "safe" in that no references to it are
@@ -181,34 +190,45 @@ public interface List<E> extends Collection<E> {
     Object[] toArray();
 
     /**
-     * Returns an array containing all of the elements in this list in
-     * proper sequence (from first to last element); the runtime type of
-     * the returned array is that of the specified array.  If the list fits
-     * in the specified array, it is returned therein.  Otherwise, a new
-     * array is allocated with the runtime type of the specified array and
-     * the size of this list.
+     * Returns an array containing all of the elements in this list in proper sequence (from first to last element); 
+     * 返回一个数组，该数组包含此列表中的所有元素序列（从第一个元素到最后一个元素）。
+     * 
+     * the runtime type of the returned array is that of the specified array.  
+     * 返回的数组的类型是指定数组的类型
+     * 
+     * If the list fits in the specified array, it is returned therein.  
+     * 如果列表能够完全容纳在指定数组中，则直接在该数组内返回
+     * 
+     * Otherwise, a new array is allocated with the runtime type of the specified array and the size of this list.
+     * 否则，将根据指定数组的运行时类型和当前列表的实际大小分配一个新的数组
+     * 
+     * If the list fits in the specified array with room to spare (i.e., the array has more elements than the list), 
+     * 若列表恰好能够装入指定数组且数组还有剩余空间（即数组元素数量大于列表元素）
+     * 
+     * the element in the array immediately following the end of the list is set to null.
+     * 则列表末尾之后紧跟的数组元素会被设置为 null
+     * 
+     * (This is useful in determining the length of the list <i>only</i> if the caller knows that the list does not contain any null elements.)
+     * 这有助于在某些情况下（特别是调用者明确知道列表不包含 null 元素时），通过检查数组中的第一个 null 来快速确定列表的实际长度。
+     * 
+     * <p>Like the {@link #toArray()} method, this method acts as bridge between array-based and collection-based APIs.  
+     * 此方法类似于 toArray() 方法，起到了连接基于数组和基于集合API之间的桥梁作用
+     * 
+     * Further, this method allows precise control over the runtime type of the output array, and may, under certain circumstances, be used to save allocation costs.
+     * 此外，该方法允许对输出数组的运行时类型进行精确控制，并且在某些情况下可以用于节省分配成本。
      *
-     * <p>If the list fits in the specified array with room to spare (i.e.,
-     * the array has more elements than the list), the element in the array
-     * immediately following the end of the list is set to <tt>null</tt>.
-     * (This is useful in determining the length of the list <i>only</i> if
-     * the caller knows that the list does not contain any null elements.)
-     *
-     * <p>Like the {@link #toArray()} method, this method acts as bridge between
-     * array-based and collection-based APIs.  Further, this method allows
-     * precise control over the runtime type of the output array, and may,
-     * under certain circumstances, be used to save allocation costs.
-     *
-     * <p>Suppose <tt>x</tt> is a list known to contain only strings.
+     * <p>Suppose x is a list known to contain only strings.
      * The following code can be used to dump the list into a newly
-     * allocated array of <tt>String</tt>:
+     * allocated array of String:
      *
+     * 举例：
      * <pre>{@code
      *     String[] y = x.toArray(new String[0]);
      * }</pre>
      *
-     * Note that <tt>toArray(new Object[0])</tt> is identical in function to
-     * <tt>toArray()</tt>.
+     * Note that toArray(new Object[0]) is identical in function to
+     * toArray().
+     * toArray(new Object[0])方法和toArray()方法是等效的
      *
      * @param a the array into which the elements of this list are to
      *          be stored, if it is big enough; otherwise, a new array of the
@@ -225,19 +245,24 @@ public interface List<E> extends Collection<E> {
     // Modification Operations
 
     /**
-     * Appends the specified element to the end of this list (optional
-     * operation).
+     * Appends the specified element to the end of this list (optional operation).
+     * 在List的结尾添加元素
      *
-     * <p>Lists that support this operation may place limitations on what
-     * elements may be added to this list.  In particular, some
-     * lists will refuse to add null elements, and others will impose
-     * restrictions on the type of elements that may be added.  List
-     * classes should clearly specify in their documentation any restrictions
-     * on what elements may be added.
+     * Lists that support this operation may place limitations on what elements may be added to this list. 
+     * 支持此操作的列表，可能会限制哪些元素可以添加到此列表里面
+     *
+     * In particular, some lists will refuse to add null elements, 
+     * 特别需要注意的是，某些列表会拒绝添加 null 元素，也就是说在这些列表中插入 null 值的操作将不被允许。
+     * 
+     * and others will impose restrictions on the type of elements that may be added. 
+     * 另外，还有一些列表会对可添加元素的类型施加特定的限制，即只允许特定类型的对象加入到列表中
+     * 
+     * List classes should clearly specify in their documentation any restrictions on what elements may be added.
+     * 任何实现 List 接口的类，在其文档中都应当清楚地指出对添加元素有哪些限制条件。这是因为不同的 List 类可能会有不同的约束
      *
      * @param e element to be appended to this list
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
-     * @throws UnsupportedOperationException if the <tt>add</tt> operation
+     * @return true (as specified by {@link Collection#add})
+     * @throws UnsupportedOperationException if the add operation
      *         is not supported by this list
      * @throws ClassCastException if the class of the specified element
      *         prevents it from being added to this list
@@ -249,37 +274,41 @@ public interface List<E> extends Collection<E> {
     boolean add(E e);
 
     /**
-     * Removes the first occurrence of the specified element from this list,
-     * if it is present (optional operation).  If this list does not contain
-     * the element, it is unchanged.  More formally, removes the element with
-     * the lowest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
-     * (if such an element exists).  Returns <tt>true</tt> if this list
-     * contained the specified element (or equivalently, if this list changed
-     * as a result of the call).
+     * Removes the first occurrence of the specified element from this list, if it is present (optional operation). 
+     * 从列表中移除首次出现的指定元素。如果该元素存在于列表中，则将其从列表中移除；
+     * 
+     * If this list does not contain the element, it is unchanged.  
+     * 若列表中不存在此元素，则不进行任何操作
+     * 
+     * More formally, removes the element with the lowest index i such that (o==null ? get(i)==null : o.equals(get(i))) 
+     * (if such an element exists).  
+     * 通常，这个方法将会移除最低的索引的元素
+     * 
+     * Returns true if this list contained the specified element (or equivalently, if this list changed as a result of the call).
+     * 如果此列表原本包含指定的元素，或者换句话说，如果由于这次调用导致列表的内容发生了变化，将会返回true
      *
      * @param o element to be removed from this list, if present
-     * @return <tt>true</tt> if this list contained the specified element
+     * @return true if this list contained the specified element
      * @throws ClassCastException if the type of the specified element
      *         is incompatible with this list
      * (<a href="Collection.html#optional-restrictions">optional</a>)
      * @throws NullPointerException if the specified element is null and this
      *         list does not permit null elements
      * (<a href="Collection.html#optional-restrictions">optional</a>)
-     * @throws UnsupportedOperationException if the <tt>remove</tt> operation
+     * @throws UnsupportedOperationException if the remove operation
      *         is not supported by this list
      */
     boolean remove(Object o);
 
 
-    // Bulk Modification Operations
+    // Bulk Modification Operations 批量修改操作
 
     /**
-     * Returns <tt>true</tt> if this list contains all of the elements of the
-     * specified collection.
+     * Returns true if this list contains all of the elements of the specified collection.
+     * 如果此列表包含指定集合的所有元素，则返回true。
      *
      * @param  c collection to be checked for containment in this list
-     * @return <tt>true</tt> if this list contains all of the elements of the
+     * @return true if this list contains all of the elements of the
      *         specified collection
      * @throws ClassCastException if the types of one or more elements
      *         in the specified collection are incompatible with this
@@ -303,8 +332,8 @@ public interface List<E> extends Collection<E> {
      * specified collection is this list, and it's nonempty.)
      *
      * @param c collection containing elements to be added to this list
-     * @return <tt>true</tt> if this list changed as a result of the call
-     * @throws UnsupportedOperationException if the <tt>addAll</tt> operation
+     * @return true if this list changed as a result of the call
+     * @throws UnsupportedOperationException if the addAll operation
      *         is not supported by this list
      * @throws ClassCastException if the class of an element of the specified
      *         collection prevents it from being added to this list
@@ -331,8 +360,8 @@ public interface List<E> extends Collection<E> {
      * @param index index at which to insert the first element from the
      *              specified collection
      * @param c collection containing elements to be added to this list
-     * @return <tt>true</tt> if this list changed as a result of the call
-     * @throws UnsupportedOperationException if the <tt>addAll</tt> operation
+     * @return true if this list changed as a result of the call
+     * @throws UnsupportedOperationException if the addAll operation
      *         is not supported by this list
      * @throws ClassCastException if the class of an element of the specified
      *         collection prevents it from being added to this list
@@ -342,7 +371,7 @@ public interface List<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of an element of the
      *         specified collection prevents it from being added to this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt; size()</tt>)
+     *         (index &lt; 0 || index &gt; size())
      */
     boolean addAll(int index, Collection<? extends E> c);
 
@@ -351,8 +380,8 @@ public interface List<E> extends Collection<E> {
      * specified collection (optional operation).
      *
      * @param c collection containing elements to be removed from this list
-     * @return <tt>true</tt> if this list changed as a result of the call
-     * @throws UnsupportedOperationException if the <tt>removeAll</tt> operation
+     * @return true if this list changed as a result of the call
+     * @throws UnsupportedOperationException if the removeAll operation
      *         is not supported by this list
      * @throws ClassCastException if the class of an element of this list
      *         is incompatible with the specified collection
@@ -373,8 +402,8 @@ public interface List<E> extends Collection<E> {
      * specified collection.
      *
      * @param c collection containing elements to be retained in this list
-     * @return <tt>true</tt> if this list changed as a result of the call
-     * @throws UnsupportedOperationException if the <tt>retainAll</tt> operation
+     * @return true if this list changed as a result of the call
+     * @throws UnsupportedOperationException if the retainAll operation
      *         is not supported by this list
      * @throws ClassCastException if the class of an element of this list
      *         is incompatible with the specified collection
@@ -498,7 +527,7 @@ public interface List<E> extends Collection<E> {
      * Removes all of the elements from this list (optional operation).
      * The list will be empty after this call returns.
      *
-     * @throws UnsupportedOperationException if the <tt>clear</tt> operation
+     * @throws UnsupportedOperationException if the clear operation
      *         is not supported by this list
      */
     void clear();
@@ -508,17 +537,17 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Compares the specified object with this list for equality.  Returns
-     * <tt>true</tt> if and only if the specified object is also a list, both
+     * true if and only if the specified object is also a list, both
      * lists have the same size, and all corresponding pairs of elements in
-     * the two lists are <i>equal</i>.  (Two elements <tt>e1</tt> and
-     * <tt>e2</tt> are <i>equal</i> if <tt>(e1==null ? e2==null :
-     * e1.equals(e2))</tt>.)  In other words, two lists are defined to be
+     * the two lists are <i>equal</i>.  (Two elements e1 and
+     * e2 are <i>equal</i> if (e1==null ? e2==null :
+     * e1.equals(e2)).)  In other words, two lists are defined to be
      * equal if they contain the same elements in the same order.  This
      * definition ensures that the equals method works properly across
-     * different implementations of the <tt>List</tt> interface.
+     * different implementations of the List interface.
      *
      * @param o the object to be compared for equality with this list
-     * @return <tt>true</tt> if the specified object is equal to this list
+     * @return true if the specified object is equal to this list
      */
     boolean equals(Object o);
 
@@ -530,9 +559,9 @@ public interface List<E> extends Collection<E> {
      *     for (E e : list)
      *         hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());
      * }</pre>
-     * This ensures that <tt>list1.equals(list2)</tt> implies that
-     * <tt>list1.hashCode()==list2.hashCode()</tt> for any two lists,
-     * <tt>list1</tt> and <tt>list2</tt>, as required by the general
+     * This ensures that list1.equals(list2) implies that
+     * list1.hashCode()==list2.hashCode() for any two lists,
+     * list1 and list2, as required by the general
      * contract of {@link Object#hashCode}.
      *
      * @return the hash code value for this list
@@ -550,7 +579,7 @@ public interface List<E> extends Collection<E> {
      * @param index index of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (index &lt; 0 || index &gt;= size())
      */
     E get(int index);
 
@@ -561,7 +590,7 @@ public interface List<E> extends Collection<E> {
      * @param index index of the element to replace
      * @param element element to be stored at the specified position
      * @return the element previously at the specified position
-     * @throws UnsupportedOperationException if the <tt>set</tt> operation
+     * @throws UnsupportedOperationException if the set operation
      *         is not supported by this list
      * @throws ClassCastException if the class of the specified element
      *         prevents it from being added to this list
@@ -570,7 +599,7 @@ public interface List<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of the specified
      *         element prevents it from being added to this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (index &lt; 0 || index &gt;= size())
      */
     E set(int index, E element);
 
@@ -582,7 +611,7 @@ public interface List<E> extends Collection<E> {
      *
      * @param index index at which the specified element is to be inserted
      * @param element element to be inserted
-     * @throws UnsupportedOperationException if the <tt>add</tt> operation
+     * @throws UnsupportedOperationException if the add operation
      *         is not supported by this list
      * @throws ClassCastException if the class of the specified element
      *         prevents it from being added to this list
@@ -591,7 +620,7 @@ public interface List<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of the specified
      *         element prevents it from being added to this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt; size()</tt>)
+     *         (index &lt; 0 || index &gt; size())
      */
     void add(int index, E element);
 
@@ -603,10 +632,10 @@ public interface List<E> extends Collection<E> {
      *
      * @param index the index of the element to be removed
      * @return the element previously at the specified position
-     * @throws UnsupportedOperationException if the <tt>remove</tt> operation
+     * @throws UnsupportedOperationException if the remove operation
      *         is not supported by this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (index &lt; 0 || index &gt;= size())
      */
     E remove(int index);
 
@@ -616,8 +645,8 @@ public interface List<E> extends Collection<E> {
     /**
      * Returns the index of the first occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the lowest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * More formally, returns the lowest index i such that
+     * (o==null ? get(i)==null : o.equals(get(i))),
      * or -1 if there is no such index.
      *
      * @param o element to search for
@@ -635,8 +664,8 @@ public interface List<E> extends Collection<E> {
     /**
      * Returns the index of the last occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the highest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * More formally, returns the highest index i such that
+     * (o==null ? get(i)==null : o.equals(get(i))),
      * or -1 if there is no such index.
      *
      * @param o element to search for
@@ -684,8 +713,8 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Returns a view of the portion of this list between the specified
-     * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive.  (If
-     * <tt>fromIndex</tt> and <tt>toIndex</tt> are equal, the returned list is
+     * fromIndex, inclusive, and toIndex, exclusive.  (If
+     * fromIndex and toIndex are equal, the returned list is
      * empty.)  The returned list is backed by this list, so non-structural
      * changes in the returned list are reflected in this list, and vice-versa.
      * The returned list supports all of the optional list operations supported
@@ -699,9 +728,9 @@ public interface List<E> extends Collection<E> {
      * <pre>{@code
      *      list.subList(from, to).clear();
      * }</pre>
-     * Similar idioms may be constructed for <tt>indexOf</tt> and
-     * <tt>lastIndexOf</tt>, and all of the algorithms in the
-     * <tt>Collections</tt> class can be applied to a subList.<p>
+     * Similar idioms may be constructed for indexOf and
+     * lastIndexOf, and all of the algorithms in the
+     * Collections class can be applied to a subList.<p>
      *
      * The semantics of the list returned by this method become undefined if
      * the backing list (i.e., this list) is <i>structurally modified</i> in
@@ -713,8 +742,8 @@ public interface List<E> extends Collection<E> {
      * @param toIndex high endpoint (exclusive) of the subList
      * @return a view of the specified range within this list
      * @throws IndexOutOfBoundsException for an illegal endpoint index value
-     *         (<tt>fromIndex &lt; 0 || toIndex &gt; size ||
-     *         fromIndex &gt; toIndex</tt>)
+     *         (fromIndex &lt; 0 || toIndex &gt; size ||
+     *         fromIndex &gt; toIndex)
      */
     List<E> subList(int fromIndex, int toIndex);
 
