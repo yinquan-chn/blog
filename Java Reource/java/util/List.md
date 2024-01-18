@@ -222,9 +222,9 @@ public interface List<E> extends Collection<E> {
      * allocated array of String:
      *
      * 举例：
-     * <pre>{@code
+     * {@code
      *     String[] y = x.toArray(new String[0]);
-     * }</pre>
+     * }
      *
      * Note that toArray(new Object[0]) is identical in function to
      * toArray().
@@ -431,12 +431,12 @@ public interface List<E> extends Collection<E> {
      *
      * @implSpec
      * The default implementation is equivalent to, for this {@code list}:
-     * <pre>{@code
+     * {@code
      *     final ListIterator<E> li = list.listIterator();
      *     while (li.hasNext()) {
      *         li.set(operator.apply(li.next()));
      *     }
-     * }</pre>
+     * }
      *
      * If the list's list-iterator does not support the {@code set} operation
      * then an {@code UnsupportedOperationException} will be thrown when
@@ -578,17 +578,21 @@ public interface List<E> extends Collection<E> {
     boolean equals(Object o);
 
     /**
-     * Returns the hash code value for this list.  The hash code of a list
-     * is defined to be the result of the following calculation:
-     * <pre>{@code
+     * Returns the hash code value for this list.
+     * 返回list的hash值
+     * The hash code of a list is defined to be the result of the following calculation:
+     * {@code
      *     int hashCode = 1;
      *     for (E e : list)
      *         hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());
-     * }</pre>
+     * }
+     * 生成逻辑
+     * 
      * This ensures that list1.equals(list2) implies that
      * list1.hashCode()==list2.hashCode() for any two lists,
-     * list1 and list2, as required by the general
-     * contract of {@link Object#hashCode}.
+     * list1 and list2, as required by the general contract of {@link Object#hashCode}.
+     * 如果list1.equals(list2)，则list1.hashCode() == list2.hashCode()对于任意两个list都成立。
+     * 用于实现Object类hashCode()方法
      *
      * @return the hash code value for this list
      * @see Object#equals(Object)
@@ -601,8 +605,9 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Returns the element at the specified position in this list.
+     * 返回指定索引位置的元素
      *
-     * @param index index of the element to return
+     * @param index index of the element to return：指定索引
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (index &lt; 0 || index &gt;= size())
@@ -610,8 +615,8 @@ public interface List<E> extends Collection<E> {
     E get(int index);
 
     /**
-     * Replaces the element at the specified position in this list with the
-     * specified element (optional operation).
+     * Replaces the element at the specified position in this list with the specified element (optional operation).
+     * 替换指定索引位置的元素
      *
      * @param index index of the element to replace
      * @param element element to be stored at the specified position
@@ -631,9 +636,13 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Inserts the specified element at the specified position in this list
-     * (optional operation).  Shifts the element currently at that position
+     * (optional operation).  
+     * 插入指定元素到指定索引位置
+     * Shifts the element currently at that position
      * (if any) and any subsequent elements to the right (adds one to their
      * indices).
+     * 这个函数将当前位置上的元素以及后续的元素向右移动（将它们的索引加1）
+     * 
      *
      * @param index index at which the specified element is to be inserted
      * @param element element to be inserted
@@ -651,10 +660,14 @@ public interface List<E> extends Collection<E> {
     void add(int index, E element);
 
     /**
-     * Removes the element at the specified position in this list (optional
-     * operation).  Shifts any subsequent elements to the left (subtracts one
-     * from their indices).  Returns the element that was removed from the
-     * list.
+     * Removes the element at the specified position in this list (optional operation).  
+     * 移除指定索引位置的元素
+     * 
+     * Shifts any subsequent elements to the left (subtracts one from their indices).  
+     * 接下来的元素向左移动（索引减1）
+     * 
+     * Returns the element that was removed from the list.
+     * 返回被移除的元素
      *
      * @param index the index of the element to be removed
      * @return the element previously at the specified position
@@ -688,11 +701,11 @@ public interface List<E> extends Collection<E> {
     int indexOf(Object o);
 
     /**
-     * Returns the index of the last occurrence of the specified element
-     * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the highest index i such that
-     * (o==null ? get(i)==null : o.equals(get(i))),
-     * or -1 if there is no such index.
+     * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+     * 返回最后一个出现的元素的索引，如果列表中不包含该元素，返回-1。
+     * 
+     * More formally, returns the highest index i such that (o==null ? get(i)==null : o.equals(get(i))), or -1 if there is no such index.
+     * 更正式的说，返回一个索引i，使得(o==null ? get(i)==null : o.equals(get(i)))，或者-1如果不存在这样的索引。
      *
      * @param o element to search for
      * @return the index of the last occurrence of the specified element in
@@ -710,8 +723,8 @@ public interface List<E> extends Collection<E> {
     // List Iterators
 
     /**
-     * Returns a list iterator over the elements in this list (in proper
-     * sequence).
+     * Returns a list iterator over the elements in this list (in proper sequence).
+     * 返回一个列表迭代器，该迭代器遍历此列表中的元素（顺序）。
      *
      * @return a list iterator over the elements in this list (in proper
      *         sequence)
@@ -738,22 +751,26 @@ public interface List<E> extends Collection<E> {
     // View
 
     /**
-     * Returns a view of the portion of this list between the specified
-     * fromIndex, inclusive, and toIndex, exclusive.  (If
-     * fromIndex and toIndex are equal, the returned list is
-     * empty.)  The returned list is backed by this list, so non-structural
-     * changes in the returned list are reflected in this list, and vice-versa.
-     * The returned list supports all of the optional list operations supported
-     * by this list.
+     * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.  
+     * 返回一个视图，该视图是此列表的指定fromIndex（包括）和toIndex（不包括）之间的一个子列表。  
+     * 
+     * (If fromIndex and toIndex are equal, the returned list is empty.)  
+     * 如果fromIndex和toIndex相等，返回的列表是空的。
+     * 
+     * The returned list is backed by this list, so non-structural changes in the returned list are reflected in this list, and vice-versa.
+     * 返回的列表是此列表的视图，因此对返回的列表的非结构性更改也会反映在此列表中，反之亦然。
+     * 
+     * The returned list supports all of the optional list operations supported by this list.
+     * 返回的列表支持所有可选的列表操作。
      *
      * This method eliminates the need for explicit range operations (of
      * the sort that commonly exist for arrays).  Any operation that expects
      * a list can be used as a range operation by passing a subList view
      * instead of a whole list.  For example, the following idiom
      * removes a range of elements from a list:
-     * <pre>{@code
+     * {@code
      *      list.subList(from, to).clear();
-     * }</pre>
+     * }
      * Similar idioms may be constructed for indexOf and
      * lastIndexOf, and all of the algorithms in the
      * Collections class can be applied to a subList.
