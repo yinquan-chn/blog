@@ -763,18 +763,21 @@ public interface List<E> extends Collection<E> {
      * The returned list supports all of the optional list operations supported by this list.
      * 返回的列表支持所有可选的列表操作。
      *
-     * This method eliminates the need for explicit range operations (of
-     * the sort that commonly exist for arrays).  Any operation that expects
-     * a list can be used as a range operation by passing a subList view
-     * instead of a whole list.  For example, the following idiom
-     * removes a range of elements from a list:
+     * This method eliminates the need for explicit range operations (of the sort that commonly exist for arrays).  
+     * 这个方法消除对范围操作（类似于通常存在于数组的范围操作）的显式需求。
+     * 
+     * Any operation that expects a list can be used as a range operation by passing a subList view instead of a whole list.  
+     * 任何操作(expect a list)可以使用子列表视图代替整个列表来作为范围操作使用。
+     * 
+     * 下面是举例说明
+     * For example, the following idiom removes a range of elements from a list:
      * {@code
      *      list.subList(from, to).clear();
      * }
-     * Similar idioms may be constructed for indexOf and
-     * lastIndexOf, and all of the algorithms in the
-     * Collections class can be applied to a subList.
-     *
+     * 下面一段就是说对子列表的操作和整个列表的操作会互相影响
+     * Similar idioms may be constructed for indexOf and lastIndexOf, 
+     * and all of the algorithms in the Collections class can be applied to a subList.
+     * 
      * The semantics of the list returned by this method become undefined if
      * the backing list (i.e., this list) is <i>structurally modified</i> in
      * any way other than via the returned list.  (Structural modifications are
