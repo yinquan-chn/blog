@@ -734,6 +734,8 @@ public interface List<E> extends Collection<E> {
     /**
      * Returns a list iterator over the elements in this list (in proper
      * sequence), starting at the specified position in the list.
+     * 返回一个列表迭代器，该迭代器遍历此列表中的元素（顺序），从指定位置开始。
+     * 
      * The specified index indicates the first element that would be
      * returned by an initial call to {@link ListIterator#next next}.
      * An initial call to {@link ListIterator#previous previous} would
@@ -795,20 +797,10 @@ public interface List<E> extends Collection<E> {
 
     /**
      * Creates a {@link Spliterator} over the elements in this list.
+     * 该函数创建一个Spliterator
      *
-     * The {@code Spliterator} reports {@link Spliterator#SIZED} and
-     * {@link Spliterator#ORDERED}.  Implementations should document the
-     * reporting of additional characteristic values.
-     *
-     * @implSpec
-     * The default implementation creates a
-     * <em><a href="Spliterator.html#binding">late-binding</a></em> spliterator
-     * from the list's {@code Iterator}.  The spliterator inherits the
-     * <em>fail-fast</em> properties of the list's iterator.
-     *
-     * @implNote
-     * The created {@code Spliterator} additionally reports
-     * {@link Spliterator#SUBSIZED}.
+     * The {@code Spliterator} reports {@link Spliterator#SIZED} and {@link Spliterator#ORDERED}.  
+     * Spliterator报告Spliterator#SIZED和Spliterator#ORDERED特性，并且可以根据具体实现文档记录其他特性
      *
      * @return a {@code Spliterator} over the elements in this list
      * @since 1.8
