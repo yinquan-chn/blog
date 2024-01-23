@@ -46,6 +46,8 @@
  * 这可能减少增量重新分配。
  *
  * <strong>Note that this implementation is not synchronized.</strong>
+ * 这个实现不是线程安全的。
+ * 
  * If multiple threads access an ArrayList instance concurrently,
  * and at least one of the threads modifies the list structurally, it
  * <i>must</i> be synchronized externally.  (A structural modification is
