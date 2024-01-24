@@ -13,3 +13,29 @@ AQL查询的语法与SQL不同，尽管某些关键字重叠。不过对于有SQ
 1. 客户端程序将AQL查询发送到ArangoDB服务器。查询文本中包含了ArangoDB需要的所有内容，以便计算结果集。
 
 2. ArangoDB解析查询，执行它，并编译结果。如果查询无效或无法执行，服服务器将返回客户端可以处理和响应的错误。如果查询可以成功执行，服务器将查询结果（如果有）返回给客户端。
+
+## 一、如何执行AQL查询
+AQL查询可以通过以下方式执行：
+- 通过web接面
+- 使用JavaScript API的数据库对象，例如，在arangosh或Foxx服务中
+- 通过原始REST HTTP API
+
+他们背后都是调用服务器的HTTP API，但web接口和数据库对象抽象了低级通信细节而且易于使用。
+
+ArangoDB web界面有特定的[查询区域](#Executing_AQL_queries_in_the_ArangoDB_web_interface)。
+
+你可以[在ArangoDB Shell运行AQL查询](https://docs.arangodb.com/3.11/aql/how-to-invoke-aql/with-the-web-interface/)使用[db._query()](https://docs.arangodb.com/3.11/aql/how-to-invoke-aql/with-arangosh/#with-db_query)和[db._createStatement()](https://docs.arangodb.com/3.11/aql/how-to-invoke-aql/with-arangosh/#with-db_createstatement-arangostatement)的db对象。本章也描述了如何使用绑定参数，统计，计数和游标与arangosh。
+
+如果你使用Foxx microservices，查看[如何编写数据库查询](https://docs.arangodb.com/3.11/develop/foxx-microservices/getting-started/#writing-database-queries)；例如，包括标记的模板字符串
+
+如果你希望使用HTTP REST API运行AQL查询，可以查看AQL查询的[HTTP接口描述](https://docs.arangodb.com/3.11/develop/http-api/queries/aql-queries/)。
+
+### 2.在ArangoDB web界面中执行AQL查询<a id="Executing_AQL_queries_in_the_ArangoDB_web_interface" />
+
+> 你可以使用web界面中的查询编辑器运行特殊AQL查询
+
+在web界面的查询区域中，输入一个查询，然后点击执行按钮，查询结果将出现在下面的编辑器中。
+
+The editor provides a few example queries that you can use as templates. It also provides a feature to explain a query and inspect its execution plan by clicking the Explain button.
+
+Bind parameters can be defined in the right-hand side pane. The format is the same as used for bind parameters in the HTTP REST API and in (JavaScript) application code.
