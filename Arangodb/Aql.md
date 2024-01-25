@@ -28,14 +28,38 @@ ArangoDB web界面有特定的[查询区域](#Executing_AQL_queries_in_the_Arang
 
 如果你使用Foxx microservices，查看[如何编写数据库查询](https://docs.arangodb.com/3.11/develop/foxx-microservices/getting-started/#writing-database-queries)；例如，包括标记的模板字符串
 
-如果你希望使用HTTP REST API运行AQL查询，可以查看AQL查询的[HTTP接口描述](https://docs.arangodb.com/3.11/develop/http-api/queries/aql-queries/)。
+如果你希望使用HTTP REST API运行AQL查询，可以查看AQL查询的[HTTP接口描述](https://docs.arangodb.com/3.11/develop/http-api/queries/aql-queries/)
 
-### 2.在ArangoDB web界面中执行AQL查询<a id="Executing_AQL_queries_in_the_ArangoDB_web_interface" />
+### 2.在ArangoDB web界面中执行AQL查询
+<a id="Executing_AQL_queries_in_the_ArangoDB_web_interface" ></a>
 
 > 你可以使用web界面中的查询编辑器运行特殊AQL查询
 
 在web界面的查询区域中，输入一个查询，然后点击执行按钮，查询结果将出现在下面的编辑器中。
 
-The editor provides a few example queries that you can use as templates. It also provides a feature to explain a query and inspect its execution plan by clicking the Explain button.
+编辑器提供了一些可以用作模板的示例查询。它还提供了一个功能，可以通过单击“Explain”按钮来解释查询并检查其执行计划。
 
-Bind parameters can be defined in the right-hand side pane. The format is the same as used for bind parameters in the HTTP REST API and in (JavaScript) application code.
+绑定参数可以在右侧窗格中定义。该格式与HTTP REST API和（JavaScript）应用程序代码中用于绑定参数的格式相同。
+
+```aql
+FOR doc IN @@collection
+  FILTER CONTAINS(LOWER(doc.author), @search, false)
+  RETURN { "name": doc.name, "descr": doc.description, "author": doc.author }
+```
+用来绑定的json参数
+```json
+{
+    "@collection": "_apps",
+    "search": "arango"
+}
+```
+How bind parameters work can be found in AQL Fundamentals.
+绑定参数如何工作可以参考[AQL 基础](#AQL_Fundamentals)
+
+查询也可以与它们的绑定参数值一起保存在AQL编辑器中，以便以后重用。这些数据存储在当前数据库的用户配置文件中（在_users系统集合中）。
+
+Also see the detailed description of the Web Interface.
+也可以查看[web界面的详细描述](https://docs.arangodb.com/3.11/components/web-interface/)
+
+## AQL 基础
+<a id="AQL_Fundamentals" ></a>
