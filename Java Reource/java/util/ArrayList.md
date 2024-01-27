@@ -1,3 +1,11 @@
+```mermaid
+graph BT
+AbstractList --> AbstractCollection -.-> Collection
+ArrayList --> AbstractList -.-> List
+ArrayList -.-> List --> Collection --> Iterable
+
+```
+
 ```java
 /**
  * Resizable-array implementation of the List interface.  
@@ -14,7 +22,7 @@
  * The size, isEmpty, get, set, iterator, and listIterator operations run in constant time.  
  * size、isEmpty、get、set、迭代器和listIterator操作以恒定时间运行。
  * 
- * The add operation runs in <i>amortized constant time</i>, that is, adding n elements requires O(n) time.  
+ * The add operation runs in amortized constant time, that is, adding n elements requires O(n) time.  
  * add操作需要O(n)的时间，其中n是添加的元素的数量。
  * 
  * All of the other operations run in linear time (roughly speaking).  
@@ -24,8 +32,8 @@
  * 这个常数因子与LinkedList实现相比要低得多。
  * 
  *
- * Each ArrayList instance has a <i>capacity</i>.  
- * 每个ArrayList实例都有一个<i>容量</i>。
+ * Each ArrayList instance has a capacity.  
+ * 每个ArrayList实例都有一个容量。
  * 
  * The capacity is the size of the array used to store the elements in the list. 
  * 这个capacity是存储列表中元素的数组的大小。
@@ -45,42 +53,53 @@
  * This may reduce the amount of incremental reallocation.
  * 这可能减少增量重新分配。
  *
- * <strong>Note that this implementation is not synchronized.</strong>
+ * Note that this implementation is not synchronized.
  * 这个实现不是线程安全的。
  * 
  * If multiple threads access an ArrayList instance concurrently,
  * and at least one of the threads modifies the list structurally, it
- * <i>must</i> be synchronized externally.  (A structural modification is
+ * must be synchronized externally.  
+ * 如果多个线程同时访问一个ArrayList实例，并且至少有一个线程修改了列表的结构，那么它必须在外部同步。
+ * 
+ * (A structural modification is
  * any operation that adds or deletes one or more elements, or explicitly
  * resizes the backing array; merely setting the value of an element is not
- * a structural modification.)  This is typically accomplished by
- * synchronizing on some object that naturally encapsulates the list.
+ * a structural modification.)  
+ * 结构修改指的是任何操作，添加或删除一个或多个元素，或修改了数组的大小；仅仅修改了集合中元素的值不是结构修改。
+ * 
+ * This is typically accomplished by synchronizing on some object that naturally encapsulates the list.
+ * 通常操作是将列表包装在某些对象上，以确保在外部进行同步。
  *
- * If no such object exists, the list should be "wrapped" using the
- * {@link Collections#synchronizedList Collections.synchronizedList}
- * method.  This is best done at creation time, to prevent accidental
- * unsynchronized access to the list:<pre>
- *   List list = Collections.synchronizedList(new ArrayList(...));</pre>
+ * If no such object exists, the list should be "wrapped" using the {@link Collections#synchronizedList Collections.synchronizedList} method. 
+ * 如果不存在这样的对象，则应使用 ｛@linkCollections#synchronizedListCollections.synchronizedList｝方法。 
+ * This is best done at creation time, to prevent accidental unsynchronized access to the list:
+ * 最好在创建时执行此操作，以防止意外地对列表进行不同步的访问：
+ * 
+ * List list = Collections.synchronizedList(new ArrayList(...));
  *
- * <a name="fail-fast">
+ * fail-fast快速失败
+ * 
  * The iterators returned by this class's {@link #iterator() iterator} and
- * {@link #listIterator(int) listIterator} methods are <em>fail-fast</em>:</a>
+ * {@link #listIterator(int) listIterator} methods are <em>fail-fast</em>
+ * 通过iterator()和listIterator(int)方法返回的迭代器具有“快速失败”特性。
+ * 
  * if the list is structurally modified at any time after the iterator is
  * created, in any way except through the iterator's own
  * {@link ListIterator#remove() remove} or
  * {@link ListIterator#add(Object) add} methods, the iterator will throw a
- * {@link ConcurrentModificationException}.  Thus, in the face of
- * concurrent modification, the iterator fails quickly and cleanly, rather
- * than risking arbitrary, non-deterministic behavior at an undetermined
- * time in the future.
+ * {@link ConcurrentModificationException}.  
+ * 如果在创建迭代器之后以任何方式（除了通过迭代器自身的remove()或add(Object)方法）对列表进行结构性修改，那么迭代器将会抛出一个ConcurrentModificationException异常。
+ * 
+ * Thus, in the face of concurrent modification, the iterator fails quickly and cleanly, rather than risking arbitrary, non-deterministic behavior at an undetermined time in the future.
+ * 因此，面对并发修改，迭代器会迅速而干净地失败，而不是冒着在未来不确定的时间出现任意、不确定行为的风险。
  *
  * Note that the fail-fast behavior of an iterator cannot be guaranteed
  * as it is, generally speaking, impossible to make any hard guarantees in the
  * presence of unsynchronized concurrent modification.  Fail-fast iterators
  * throw {@code ConcurrentModificationException} on a best-effort basis.
  * Therefore, it would be wrong to write a program that depended on this
- * exception for its correctness:  <i>the fail-fast behavior of iterators
- * should be used only to detect bugs.</i>
+ * exception for its correctness:  the fail-fast behavior of iterators
+ * should be used only to detect bugs.
  *
  * This class is a member of the
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
@@ -383,7 +402,7 @@ public class ArrayList<E> extends AbstractList<E>
      * (i.e., the array has more elements than the list), the element in
      * the array immediately following the end of the collection is set to
      * null.  (This is useful in determining the length of the
-     * list <i>only</i> if the caller knows that the list does not contain
+     * list only if the caller knows that the list does not contain
      * any null elements.)
      *
      * @param a the array into which the elements of the list are to
@@ -798,7 +817,7 @@ public class ArrayList<E> extends AbstractList<E>
      * An initial call to {@link ListIterator#previous previous} would
      * return the element with the specified index minus one.
      *
-     * The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+     * The returned list iterator is <a href="#fail-fast">fail-fast</a>.
      *
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
@@ -812,7 +831,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Returns a list iterator over the elements in this list (in proper
      * sequence).
      *
-     * The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+     * The returned list iterator is <a href="#fail-fast">fail-fast</a>.
      *
      * @see #listIterator(int)
      */
@@ -823,7 +842,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Returns an iterator over the elements in this list in proper sequence.
      *
-     * The returned iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+     * The returned iterator is <a href="#fail-fast">fail-fast</a>.
      *
      * @return an iterator over the elements in this list in proper sequence
      */
@@ -975,15 +994,15 @@ public class ArrayList<E> extends AbstractList<E>
      * a list can be used as a range operation by passing a subList view
      * instead of a whole list.  For example, the following idiom
      * removes a range of elements from a list:
-     * <pre>
+     * 
      *      list.subList(from, to).clear();
-     * </pre>
+     * 
      * Similar idioms may be constructed for {@link #indexOf(Object)} and
      * {@link #lastIndexOf(Object)}, and all of the algorithms in the
      * {@link Collections} class can be applied to a subList.
      *
      * The semantics of the list returned by this method become undefined if
-     * the backing list (i.e., this list) is <i>structurally modified</i> in
+     * the backing list (i.e., this list) is structurally modified in
      * any way other than via the returned list.  (Structural modifications are
      * those that change the size of this list, or otherwise perturb it in such
      * a fashion that iterations in progress may yield incorrect results.)
