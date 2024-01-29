@@ -95,11 +95,15 @@ ArrayList -.-> List --> Collection --> Iterable
  *
  * Note that the fail-fast behavior of an iterator cannot be guaranteed
  * as it is, generally speaking, impossible to make any hard guarantees in the
- * presence of unsynchronized concurrent modification.  Fail-fast iterators
- * throw {@code ConcurrentModificationException} on a best-effort basis.
+ * presence of unsynchronized concurrent modification.  
+ * 无法保证绝对的快速失败：尽管快速失败机制试图在检测到并发修改时立即抛出异常，但在非同步并发修改的情况下，由于线程间的竞态条件等因素，理论上不可能对快速失败行为做出严格的保证。
+ * Fail-fast iterators throw {@code ConcurrentModificationException} on a best-effort basis.
+ * 尽力而为的原则：快速失败的迭代器会在尽最大努力的基础上抛出ConcurrentModificationException异常。这意味着虽然设计上期望在并发修改发生时能及时发现并抛出异常，但不能确保每次都能准确捕获到所有可能的并发修改情况。
+ * 
  * Therefore, it would be wrong to write a program that depended on this
  * exception for its correctness:  the fail-fast behavior of iterators
  * should be used only to detect bugs.
+ * 正确使用快速失败机制：开发人员不应依赖于快速失败异常来确保程序逻辑的正确性。也就是说，不应该编写这样的代码：其正常运行的前提是必须抛出ConcurrentModificationException。这是因为快速失败行为并不能作为并发编程中的一种安全机制来使用。
  *
  * This class is a member of the
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
