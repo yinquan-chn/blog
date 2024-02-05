@@ -125,28 +125,41 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Default initial capacity.
+     * 默认初始容量
      */
     private static final int DEFAULT_CAPACITY = 10;
 
     /**
      * Shared empty array instance used for empty instances.
+     * 这是共享的空数组实例，用于表示没有任何元素的ArrayList。当ArrayList被创建且未指定初始容量时，并不会立即分配实际的数据存储空间，而是引用这个空数组。
      */
     private static final Object[] EMPTY_ELEMENTDATA = {};
 
     /**
-     * Shared empty array instance used for default sized empty instances. We
-     * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
-     * first element is added.
+     * Shared empty array instance used for default sized empty instances.
+     * 这也是一个共享的空数组实例，但它专门用于表示默认大小（即初始容量为0）的空ArrayList
+     * 
+     *  We distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when first element is added.
+     * EMPTY_ELEMENTDATA区分的主要目的是为了在扩容时准确知道应该将数组容量扩大到多大
      */
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
 
     /**
      * The array buffer into which the elements of the ArrayList are stored.
-     * The capacity of the ArrayList is the length of this array buffer. Any
-     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     * ArrayList的元素都会存储在这个数组缓冲区中
+     * 
+     * The capacity of the ArrayList is the length of this array buffer. 
+     * 属猪的数组缓冲区的容量就是ArrayList的容量。
+     * 
+     * Any empty ArrayList with elementData ==  DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added.
+     * 如果ArrayList为空，并且其内部的 elementData 变量引用的是 DEFAULTCAPACITY_EMPTY_ELEMENTDATA 这个空数组实例，在添加第一个元素时，ArrayList会将其容量自动扩展到默认容量（DEFAULT_CAPACITY）
+     * 
+     * 说明：
+     * transient 关键字表明该字段不会被序列化，即在将对象转换为字节流进行持久化存储或网络传输时，不会包含此字段的数据
+     * 通常情况下成员变量会声明为私有（private）以保护其内部状态不被外部直接访问，但在这里故意没有将其设置为私有的原因是便于嵌套类（nested class）访问这个变量
      */
     transient Object[] elementData; // non-private to simplify nested class access
+    
 
     /**
      * The size of the ArrayList (the number of elements it contains).
