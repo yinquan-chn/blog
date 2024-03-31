@@ -163,6 +163,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * The size of the ArrayList (the number of elements it contains).
+     * ArrayList的大小（即包含的元素个数）
      *
      * @serial
      */
@@ -170,10 +171,10 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Constructs an empty list with the specified initial capacity.
+     * 构建一个空的ArrayList，指定初始容量
      *
-     * @param  initialCapacity  the initial capacity of the list
-     * @throws IllegalArgumentException if the specified initial capacity
-     *         is negative
+     * @param  initialCapacity  list的初始容量
+     * @throws IllegalArgumentException 如果初始容量一个负数抛出异常
      */
     public ArrayList(int initialCapacity) {
         if (initialCapacity > 0) {
@@ -188,6 +189,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Constructs an empty list with an initial capacity of ten.
+     * 构建一个空的ArrayList，初始容量为10
      */
     public ArrayList() {
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
@@ -197,14 +199,16 @@ public class ArrayList<E> extends AbstractList<E>
      * Constructs a list containing the elements of the specified
      * collection, in the order they are returned by the collection's
      * iterator.
+     * 构建一个ArrayList，包含指定集合中的所有元素，按照集合的迭代器返回的顺序
      *
-     * @param c the collection whose elements are to be placed into this list
-     * @throws NullPointerException if the specified collection is null
+     * @param c 构建list元素的集合
+     * @throws NullPointerException 如果目标集合是null，则抛出NullPointerException异常
      */
     public ArrayList(Collection<? extends E> c) {
         elementData = c.toArray();
         if ((size = elementData.length) != 0) {
             // c.toArray might (incorrectly) not return Object[] (see 6260652)
+            // Java1.6 以前可能存在c.toArray()不是Object[]的问题https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652
             if (elementData.getClass() != Object[].class)
                 elementData = Arrays.copyOf(elementData, size, Object[].class);
         } else {
@@ -214,13 +218,18 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Trims the capacity of this ArrayList instance to be the
-     * list's current size.  An application can use this operation to minimize
-     * the storage of an ArrayList instance.
+     * Trims the capacity of this ArrayList instance to be the list's current size.  
+     * 整理容量，将ArrayList的容量调整到当前大小
+     * An application can use this operation to minimize the storage of an ArrayList instance.
+     * 系统可以使用此方法来最小化ArrayList实例的存储。
      */
     public void trimToSize() {
+        // ArrayList被修改的次数
         modCount++;
+        // size是当前元素数量，当前元素数量小于底层数据数组(elementData)，则说明有收缩的空间
         if (size < elementData.length) {
+            // 当元素为0时，设置为预定的空数组，释放原数组空间，
+            // 否则调用Arrays.copyOf方法，将底层数组复制到新数组中，并返回新数组
             elementData = (size == 0)
               ? EMPTY_ELEMENTDATA
               : Arrays.copyOf(elementData, size);
