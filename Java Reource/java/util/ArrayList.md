@@ -237,20 +237,21 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Increases the capacity of this ArrayList instance, if
-     * necessary, to ensure that it can hold at least the number of elements
-     * specified by the minimum capacity argument.
+     * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+     * 确保ArrayList的容量至少能容纳minCapacity个元素
      *
-     * @param   minCapacity   the desired minimum capacity
+     * @param   minCapacity   the desired minimum capacity，所需的最小容量
      */
     public void ensureCapacity(int minCapacity) {
+        // 最小扩展容量minExpand
         int minExpand = (elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
             // any size if not default element table
+            // 如果当前不是默认的元素数组，说明ArrayListy已经被初始化，将minExpand设置为0，说明任何大小都进行扩容
             ? 0
-            // larger than default for default empty table. It's already
-            // supposed to be at default size.
+            // larger than default for default empty table. It's already supposed to be at default size.
+            // 默认的空数组，表明ArrayList还未真正分配过容量，这时minExpand被设置为DEFAULT_CAPACITY，它是ArrayList初始容量的默认值
             : DEFAULT_CAPACITY;
-
+        // 需要的最小容量，大于当前最小扩展容量，则进行扩容
         if (minCapacity > minExpand) {
             ensureExplicitCapacity(minCapacity);
         }
