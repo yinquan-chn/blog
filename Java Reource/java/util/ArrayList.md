@@ -257,6 +257,7 @@ public class ArrayList<E> extends AbstractList<E>
         }
     }
 
+    // 用于计算ArrayList需要的实际容量。
     private static int calculateCapacity(Object[] elementData, int minCapacity) {
         if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
             return Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -264,54 +265,70 @@ public class ArrayList<E> extends AbstractList<E>
         return minCapacity;
     }
 
+    // 调用calculateCapacity方法计算实际需要的容量，并将结果传递给ensureExplicitCapacity方法，触发扩容操作
     private void ensureCapacityInternal(int minCapacity) {
         ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
     }
 
     private void ensureExplicitCapacity(int minCapacity) {
+        // 集合操作数增加
         modCount++;
 
         // overflow-conscious code
+        // 此处是考虑溢出的情况，详情可以参考使用：minCapacity - elementData.length > 0 对于minCapacity > elementData.length,虽然逻辑上相同
+        // 但是在实际计算机中会有溢出的情况，第一种写法可以避免一部分溢出的问题
         if (minCapacity - elementData.length > 0)
             grow(minCapacity);
     }
 
     /**
      * The maximum size of array to allocate.
+     * array的最大值
      * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
+     * 一些VM在数组中保留一些头信息，
+     * 
+     * Attempts to allocate larger arrays may result in OutOfMemoryError: Requested array size exceeds VM limit
+     * 超过VM限制可能会抛出的OutOfMemoryError: Requested array size exceeds VM limit
      */
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /**
-     * Increases the capacity to ensure that it can hold at least the
-     * number of elements specified by the minimum capacity argument.
+     * Increases the capacity to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+     * 增加容量，确保至少能容纳minCapacity个元素
      *
      * @param minCapacity the desired minimum capacity
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = elementData.length;
+        // 即将现有容量增加1.5倍
         int newCapacity = oldCapacity + (oldCapacity >> 1);
+        // 如果新的容量仍不足以满足要求，因此将 newCapacity 直接设置为 minCapacity。
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
+
         if (newCapacity - MAX_ARRAY_SIZE > 0)
+            // 防止数组容量过大造成整数溢出，调用hugeCapacity(minCapacity) 来处理超大容量的需求，该方法会返回一个合适的最大容量值
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
+        // minCapacity 往往接近于当前 ArrayList 的大小（size），通过这种方式扩容既能满足未来存储需求，又不会过度分配内存，从而提高了效率
         elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
     private static int hugeCapacity(int minCapacity) {
+        // 整数溢出
         if (minCapacity < 0) // overflow
             throw new OutOfMemoryError();
         return (minCapacity > MAX_ARRAY_SIZE) ?
-            Integer.MAX_VALUE :
+            // 如果minCapacity大于MAX_ARRAY_SIZE，则返回Integer的最大值Integer.MAX_VALUE，此时vm会抛出OutOfMemoryError: Requested array size exceeds VM limit
+            Integer.MAX_VALUE :、
+            // 如果minCapacity不大于MAX_ARRAY_SIZE，则直接返回MAX_ARRAY_SIZE作为最大的允许容量值，ArrayList将扩容到这个大小
             MAX_ARRAY_SIZE;
     }
 
     /**
      * Returns the number of elements in this list.
+     * 返回集合中元素的个数
      *
      * @return the number of elements in this list
      */
@@ -321,6 +338,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Returns true if this list contains no elements.
+     * 返回true，如果集合中元素个数为0
      *
      * @return true if this list contains no elements
      */
@@ -330,9 +348,10 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Returns true if this list contains the specified element.
-     * More formally, returns true if and only if this list contains
-     * at least one element e such that
-     * (o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e)).
+     * 返回true，如果集合中包含指定的元素
+     *
+     * More formally, returns true if and only if this list contains at least one element e such that (o==null ? e==null : o.equals(e)).
+     * 更正式的，如果集合中包含至少一个元素e，满足o==null ? e==null : o.equals(e)，则返回true；
      *
      * @param o element whose presence in this list is to be tested
      * @return true if this list contains the specified element
@@ -342,11 +361,11 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns the index of the first occurrence of the specified element
-     * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the lowest index i such that
-     * (o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i))),
-     * or -1 if there is no such index.
+     * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+     * 返回索引的第一个出现指定的元素的索引，如果不包含指定的元素，则返回-1
+     * 
+     * More formally, returns the lowest index i such that (o==null ? get(i)==null : o.equals(get(i))), or -1 if there is no such index.
+     * 更正式的，返回满足o==null ? get(i)==null : o.equals(get(i))的最小索引i，如果不存在满足条件的索引，则返回-1
      */
     public int indexOf(Object o) {
         if (o == null) {
@@ -362,11 +381,11 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns the index of the last occurrence of the specified element
-     * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the highest index i such that
-     * (o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i))),
-     * or -1 if there is no such index.
+     * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+     * 返回最后一个出现指定的元素的索引，如果不包含指定的元素，则返回-1
+     * 
+     * More formally, returns the highest index i such that (o==null ? get(i)==null : o.equals(get(i))), or -1 if there is no such index.
+     * 更正式的，返回满足o==null ? get(i)==null : o.equals(get(i))的最大索引i，如果不存在满足条件的索引，则返回-1
      */
     public int lastIndexOf(Object o) {
         if (o == null) {
@@ -382,10 +401,10 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns a shallow copy of this ArrayList instance.  (The
-     * elements themselves are not copied.)
+     * Returns a shallow copy of this ArrayList instance.  (The elements themselves are not copied.)
+     * 返回一个浅拷贝的ArrayList实例
      *
-     * @return a clone of this ArrayList instance
+     * @return a clone of this ArrayList instance 一个克隆的ArrayList实例
      */
     public Object clone() {
         try {
@@ -395,42 +414,57 @@ public class ArrayList<E> extends AbstractList<E>
             return v;
         } catch (CloneNotSupportedException e) {
             // this shouldn't happen, since we are Cloneable
+            // 理论上讲，由于ArrayList实现了Cloneable接口，super.clone()不应该抛出CloneNotSupportedException异常
             throw new InternalError(e);
         }
     }
 
     /**
-     * Returns an array containing all of the elements in this list
-     * in proper sequence (from first to last element).
+     * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
+     * 返回一个包含所有元素的数组，该数组的顺序与集合中的元素顺序一致（从第一个元素到最后一个元素）
      *
-     * The returned array will be "safe" in that no references to it are
-     * maintained by this list.  (In other words, this method must allocate
-     * a new array).  The caller is thus free to modify the returned array.
+     * The returned array will be "safe" in that no references to it are maintained by this list.  
+     * 这个返回的数组是安全的，不会被该集合所维护
+     * 
+     * (In other words, this method must allocate a new array).
+     * 换句话说，该方法必须分配一个新的数组
+     * 
+     * The caller is thus free to modify the returned array.
+     * 调用者可以自由的修改返回的数组
      *
-     * This method acts as bridge between array-based and collection-based
-     * APIs.
+     * This method acts as bridge between array-based and collection-based APIs.
+     * 这个方法充当数组和集合之间的桥梁
      *
-     * @return an array containing all of the elements in this list in
-     *         proper sequence
+     * @return an array containing all of the elements in this list in proper sequence；一个包含所有元素的数组，该数组的顺序与集合中的元素顺序一致（从第一个元素到最后一个元素）
      */
     public Object[] toArray() {
         return Arrays.copyOf(elementData, size);
     }
 
     /**
-     * Returns an array containing all of the elements in this list in proper
-     * sequence (from first to last element); the runtime type of the returned
-     * array is that of the specified array.  If the list fits in the
-     * specified array, it is returned therein.  Otherwise, a new array is
-     * allocated with the runtime type of the specified array and the size of
-     * this list.
+     * Returns an array containing all of the elements in this list in proper sequence (from first to last element); 
+     * 返回一个包含所有元素的数组，该数组的顺序与集合中的元素顺序一致（从第一个元素到最后一个元素）
+     * 
+     * the runtime type of the returned array is that of the specified array.  
+     * 返回数组的类型与指定的数组相同
+     * 
+     * If the list fits in the specified array, it is returned therein.  
+     * 如果列表适合指定的数组，则返回 therein
+     *
+     * Otherwise, a new array is allocated with the runtime type of the specified array and the size of this list.
+     * 否则，分配一个具有运行时类型的指定的数组和集合大小的新数组
      *
      * If the list fits in the specified array with room to spare
-     * (i.e., the array has more elements than the list), the element in
-     * the array immediately following the end of the collection is set to
-     * null.  (This is useful in determining the length of the
-     * list only if the caller knows that the list does not contain
-     * any null elements.)
+     * 如果列表适合指定的数组，但有剩余空间
+     * 
+     * (i.e., the array has more elements than the list), 
+     * 也就是说，这个数组有剩余空间
+     * 
+     * the element in the array immediately following the end of the collection is set to null.
+     * 这个元素在集合末尾之后被设置为null
+     * 
+     *  (This is useful in determining the length of the list only if the caller knows that the list does not contain any null elements.)
+     * 这个是用来确定集合长度的，如果调用者知道集合不包含任何null元素
      *
      * @param a the array into which the elements of the list are to
      *          be stored, if it is big enough; otherwise, a new array of the
@@ -445,6 +479,7 @@ public class ArrayList<E> extends AbstractList<E>
     public <T> T[] toArray(T[] a) {
         if (a.length < size)
             // Make a new array of a's runtime type, but my contents:
+            // 创建一个新的数组，该数组的运行时类型与指定的数组相同，但包含集合中的元素
             return (T[]) Arrays.copyOf(elementData, size, a.getClass());
         System.arraycopy(elementData, 0, a, 0, size);
         if (a.length > size)
@@ -453,28 +488,33 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     // Positional Access Operations
-
+    // 位置访问操作
     @SuppressWarnings("unchecked")
     E elementData(int index) {
+        // 取出索引位置的元素
         return (E) elementData[index];
     }
 
     /**
      * Returns the element at the specified position in this list.
+     * 返回集合中指定索引位置的元素
      *
      * @param  index index of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E get(int index) {
+        // 判断索引是否越界
         rangeCheck(index);
 
+        // 取出索引位置的元素
         return elementData(index);
     }
+    
 
     /**
-     * Replaces the element at the specified position in this list with
-     * the specified element.
+     * Replaces the element at the specified position in this list with the specified element.
+     * 替换集合中指定索引位置的元素
      *
      * @param index index of the element to replace
      * @param element element to be stored at the specified position
@@ -482,59 +522,77 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E set(int index, E element) {
+        // 判断索引是否越界
         rangeCheck(index);
-
+        // 获取索引位置的元素
         E oldValue = elementData(index);
+        // 替换元素
         elementData[index] = element;
+        // 返回旧值
         return oldValue;
     }
 
     /**
      * Appends the specified element to the end of this list.
+     * 添加元素到集合中
      *
      * @param e element to be appended to this list
      * @return true (as specified by {@link Collection#add})
      */
     public boolean add(E e) {
+        // 集合的容量增加
         ensureCapacityInternal(size + 1);  // Increments modCount!!
+        // 增加元素
         elementData[size++] = e;
         return true;
     }
 
     /**
-     * Inserts the specified element at the specified position in this
-     * list. Shifts the element currently at that position (if any) and
-     * any subsequent elements to the right (adds one to their indices).
+     * Inserts the specified element at the specified position in this list.
+     * 在此列表中的指定位置插入指定的元素。
+     * 
+     * Shifts the element currently at that position (if any) and any subsequent elements to the right (adds one to their indices).
+     * 将当前位于该位置的元素（如果有）和任何后续元素向右移动（在其索引中添加一个）。
      *
      * @param index index at which the specified element is to be inserted
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public void add(int index, E element) {
+        // 判断索引是否越界
         rangeCheckForAdd(index);
 
+        // 集合的容量增加
         ensureCapacityInternal(size + 1);  // Increments modCount!!
+        // 元素右移
         System.arraycopy(elementData, index, elementData, index + 1,
                          size - index);
+        // 添加元素              
         elementData[index] = element;
         size++;
     }
 
     /**
-     * Removes the element at the specified position in this list.
-     * Shifts any subsequent elements to the left (subtracts one from their
-     * indices).
+     * Removes the element at the specified position in this list. 
+     * 移除集合中指定索引位置的元素
+     * 
+     * Shifts any subsequent elements to the left (subtracts one from their indices).
+     * 将索引后面的元素向左移动
      *
      * @param index the index of the element to be removed
      * @return the element that was removed from the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E remove(int index) {
+        // 判断索引是否越界
         rangeCheck(index);
 
         modCount++;
+
+        // 获取旧元素
         E oldValue = elementData(index);
 
+        // 将索引后面的元素向左移动
         int numMoved = size - index - 1;
         if (numMoved > 0)
             System.arraycopy(elementData, index+1, elementData, index,
@@ -549,7 +607,7 @@ public class ArrayList<E> extends AbstractList<E>
      * if it is present.  If the list does not contain the element, it is
      * unchanged.  More formally, removes the element with the lowest index
      * i such that
-     * (o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))
+     * (o==null ? get(i)==null : o.equals(get(i)))
      * (if such an element exists).  Returns true if this list
      * contained the specified element (or equivalently, if this list
      * changed as a result of the call).
@@ -644,6 +702,7 @@ public class ArrayList<E> extends AbstractList<E>
         Object[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount
+        
 
         int numMoved = size - index;
         if (numMoved > 0)
@@ -694,13 +753,16 @@ public class ArrayList<E> extends AbstractList<E>
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
 
+
     /**
      * A version of rangeCheck used by add and addAll.
      */
     private void rangeCheckForAdd(int index) {
         if (index > size || index < 0)
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+            
     }
+
 
     /**
      * Constructs an IndexOutOfBoundsException detail message.
@@ -1043,10 +1105,12 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     static void subListRangeCheck(int fromIndex, int toIndex, int size) {
+        
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
         if (toIndex > size)
             throw new IndexOutOfBoundsException("toIndex = " + toIndex);
+            
         if (fromIndex > toIndex)
             throw new IllegalArgumentException("fromIndex(" + fromIndex +
                                                ") > toIndex(" + toIndex + ")");
@@ -1073,6 +1137,7 @@ public class ArrayList<E> extends AbstractList<E>
             E oldValue = ArrayList.this.elementData(offset + index);
             ArrayList.this.elementData[offset + index] = e;
             return oldValue;
+            
         }
 
         public E get(int index) {
@@ -1080,6 +1145,7 @@ public class ArrayList<E> extends AbstractList<E>
             checkForComodification();
             return ArrayList.this.elementData(offset + index);
         }
+
 
         public int size() {
             checkForComodification();
@@ -1092,6 +1158,7 @@ public class ArrayList<E> extends AbstractList<E>
             parent.add(parentOffset + index, e);
             this.modCount = parent.modCount;
             this.size++;
+            
         }
 
         public E remove(int index) {
@@ -1100,6 +1167,7 @@ public class ArrayList<E> extends AbstractList<E>
             E result = parent.remove(parentOffset + index);
             this.modCount = parent.modCount;
             this.size--;
+            
             return result;
         }
 
@@ -1121,6 +1189,7 @@ public class ArrayList<E> extends AbstractList<E>
             if (cSize==0)
                 return false;
 
+
             checkForComodification();
             parent.addAll(parentOffset + index, c);
             this.modCount = parent.modCount;
@@ -1139,6 +1208,7 @@ public class ArrayList<E> extends AbstractList<E>
 
             return new ListIterator<E>() {
                 int cursor = index;
+                
                 int lastRet = -1;
                 int expectedModCount = ArrayList.this.modCount;
 
@@ -1258,14 +1328,17 @@ public class ArrayList<E> extends AbstractList<E>
         }
 
         private void rangeCheck(int index) {
+            
             if (index < 0 || index >= this.size)
                 throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
         }
+
 
         private void rangeCheckForAdd(int index) {
             if (index < 0 || index > this.size)
                 throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
         }
+
 
         private String outOfBoundsMsg(int index) {
             return "Index: "+index+", Size: "+this.size;
