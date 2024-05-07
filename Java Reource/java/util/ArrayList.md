@@ -1104,7 +1104,12 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * An optimized version of AbstractList.ListItr
-     * AbstractList.ListItr的优化版本
+     * AbstractList.ListItr的优化版本：
+     * hasNext() 和 next()：用于正向遍历集合。
+     * hasPrevious() 和 previous()：用于反向遍历集合。
+     * add(E e)：在指定位置插入一个元素。
+     * set(E e)：替换上次调用 next 或 previous 返回的元素。
+     * remove()：删除上次调用 next 或 previous 返回的元素。
      */
     private class ListItr extends Itr implements ListIterator<E> {
         /**
@@ -1144,39 +1149,78 @@ public class ArrayList<E> extends AbstractList<E>
             return cursor - 1;
         }
 
+        /**
+         * 获取当前迭代器指向的前一个元素。
+         * 此方法会更新迭代器的游标位置，使其指向当前元素的前一个元素。
+         * 如果当前元素是集合中的第一个元素，则抛出NoSuchElementException。
+         * 如果在迭代过程中集合被并发修改，则抛出ConcurrentModificationException。
+         * 
+         * @return 返回当前元素的前一个元素。如果不存在前一个元素，则抛出异常。
+         * @throws NoSuchElementException 如果当前元素是集合中的第一个元素。
+         * @throws ConcurrentModificationException 如果在迭代过程中集合被并发修改。
+         */
         @SuppressWarnings("unchecked")
         public E previous() {
+            // 检查是否有并发修改
             checkForComodification();
             int i = cursor - 1;
+            // 如果游标小于0，则抛出NoSuchElementException
             if (i < 0)
                 throw new NoSuchElementException();
+            // 检查游标是否超出数组长度
             Object[] elementData = ArrayList.this.elementData;
             if (i >= elementData.length)
                 throw new ConcurrentModificationException();
             cursor = i;
+            // 返回前一个元素
             return (E) elementData[lastRet = i];
         }
 
+        /**
+         * 将集合中指定位置的元素替换为新的元素。
+         * 
+         * @param e 要设置的新元素，类型与集合中元素类型相同。
+         * @throws IllegalStateException 如果在调用此方法之前没有通过迭代器获取元素，则抛出此异常。
+         * @throws ConcurrentModificationException 如果在迭代过程中集合被并发修改，则抛出此异常。
+         */
         public void set(E e) {
+             // 检查是否已经通过迭代器获取了元素，如果没有，则抛出IllegalStateException异常
             if (lastRet < 0)
                 throw new IllegalStateException();
+
+            // 检查是否有并发修改
             checkForComodification();
 
             try {
+                // 调用ArrayList的set方法，将指定位置的元素替换为新的元素
                 ArrayList.this.set(lastRet, e);
             } catch (IndexOutOfBoundsException ex) {
+                // 如果抛出IndexOutOfBoundsException异常，则说明集合被并发修改，则抛出ConcurrentModificationException异常
                 throw new ConcurrentModificationException();
             }
         }
 
+        /**
+         * 向当前 ArrayList 中添加一个元素。
+         * 该方法会检查列表是否被并发修改，然后尝试在当前迭代器的下一个位置插入元素，并更新相关索引和状态。
+         * 如果在尝试添加元素时发生索引越界异常，则将其转换为并发修改异常抛出。
+         *
+         * @param e 要添加到 ArrayList 的元素。
+         * @throws ConcurrentModificationException 如果在迭代过程中列表被并发修改。
+         */
         public void add(E e) {
+            // 检查是否有并发修改
             checkForComodification();
 
             try {
+                // 获取当前迭代的位置，并插入元素
                 int i = cursor;
                 ArrayList.this.add(i, e);
+                // 更新迭代器位置
                 cursor = i + 1;
+                // 重置上一次返回索引
                 lastRet = -1;
+                // 更新期望修改次数
                 expectedModCount = modCount;
             } catch (IndexOutOfBoundsException ex) {
                 throw new ConcurrentModificationException();
