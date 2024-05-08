@@ -80,7 +80,7 @@ ArrayList -.-> List --> Collection --> Iterable
  * fail-fast快速失败
  * 
  * The iterators returned by this class's {@link #iterator() iterator} and
- * {@link #listIterator(int) listIterator} methods are <em>fail-fast</em>
+ * {@link #listIterator(int) listIterator} methods are fail-fast
  * 通过iterator()和listIterator(int)方法返回的迭代器具有“快速失败”特性。
  * 
  * if the list is structurally modified at any time after the iterator is
@@ -1229,36 +1229,47 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns a view of the portion of this list between the specified
-     * {@code fromIndex}, inclusive, and {@code toIndex}, exclusive.  (If
-     * {@code fromIndex} and {@code toIndex} are equal, the returned list is
-     * empty.)  The returned list is backed by this list, so non-structural
-     * changes in the returned list are reflected in this list, and vice-versa.
-     * The returned list supports all of the optional list operations.
-     *
-     * This method eliminates the need for explicit range operations (of
-     * the sort that commonly exist for arrays).  Any operation that expects
-     * a list can be used as a range operation by passing a subList view
-     * instead of a whole list.  For example, the following idiom
-     * removes a range of elements from a list:
+     * Returns a view of the portion of this list between the specified {@code fromIndex}, inclusive, and {@code toIndex}, exclusive.  
+     * 返回该列表中从指定 {@code fromIndex}（包括）到 {@code toIndex}（不包括）之间的元素的视图。
      * 
+     * (If {@code fromIndex} and {@code toIndex} are equal, the returned list is empty.)  
+     * 如果{@code fromIndex}和{@code toIndex}相等，则返回的列表为空。
+     * 
+     * The returned list is backed by this list, so non-structural changes in the returned list are reflected in this list, and vice-versa.
+     * 返回的列表是该列表的视图，因此返回列表中的非结构更改会反映在此列表中，反之亦然。
+     * 
+     * The returned list supports all of the optional list operations.
+     * 返回的列表支持所有可选的列表操作。
+     *
+     * This method eliminates the need for explicit range operations (of the sort that commonly exist for arrays).  
+     * 这个方法删除了显式范围操作（这些操作通常存在于数组中）。
+     * 
+     * Any operation that expects a list can be used as a range operation by passing a subList view instead of a whole list.  
+     * 任何可以用作范围操作，只需传递一个子列表视图而不是整个列表。
+     * 
+     * For example, the following idiom removes a range of elements from a list:
+     * 例如，下面的代码段从列表中删除一个范围内的元素：
      *      list.subList(from, to).clear();
      * 
-     * Similar idioms may be constructed for {@link #indexOf(Object)} and
-     * {@link #lastIndexOf(Object)}, and all of the algorithms in the
-     * {@link Collections} class can be applied to a subList.
-     *
-     * The semantics of the list returned by this method become undefined if
-     * the backing list (i.e., this list) is structurally modified in
-     * any way other than via the returned list.  (Structural modifications are
-     * those that change the size of this list, or otherwise perturb it in such
-     * a fashion that iterations in progress may yield incorrect results.)
+     * Similar idioms may be constructed for {@link #indexOf(Object)} and {@link #lastIndexOf(Object)}, 
+     * 类似的代码段可以用于{@link #indexOf(Object)}和{@link #lastIndexOf(Object)}。
+     * 
+     * and all of the algorithms in the {@link Collections} class can be applied to a subList.
+     * 并且可以将{@link Collections}类中的所有算法应用于子列表。
+     * 
+     * The semantics of the list returned by this method become undefined if the backing list (i.e., this list) is structurally modified in any way other than via the returned list.  
+     * 这个方法返回的列表如果其后备列表（即此列表）以任何方式（除了通过返回的列表）进行结构修改，则其语义将变为未定义。
+     * 
+     * (Structural modifications are those that change the size of this list, or otherwise perturb it in such a fashion that iterations in progress may yield incorrect results.)
+     * 结构的修改是那些改变此列表的大小，或者以其他方式扰乱它，使得正在进行中的迭代可能会产生不正确的结果。
      *
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */
     public List<E> subList(int fromIndex, int toIndex) {
+        // 检查索引范围是否合法
         subListRangeCheck(fromIndex, toIndex, size);
+        // 返回子列表
         return new SubList(this, 0, fromIndex, toIndex);
     }
 
@@ -1274,12 +1285,22 @@ public class ArrayList<E> extends AbstractList<E>
                                                ") > toIndex(" + toIndex + ")");
     }
 
+
     private class SubList extends AbstractList<E> implements RandomAccess {
         private final AbstractList<E> parent;
         private final int parentOffset;
         private final int offset;
         int size;
 
+        /**
+         * SubList类构造函数
+         * 
+         * @param parent 父列表，即从哪个列表中截取子列表。
+         * @param offset 父列表中的起始偏移量，表示从父列表的哪个位置开始截取。
+         * @param fromIndex 子列表的起始索引（包含），相对于父列表的索引。
+         * @param toIndex 子列表的结束索引（不包含），相对于父列表的索引。
+         * 该构造函数初始化一个子列表，设置其与父列表的关联、偏移量和大小。
+         */
         SubList(AbstractList<E> parent,
                 int offset, int fromIndex, int toIndex) {
             this.parent = parent;
@@ -1289,18 +1310,33 @@ public class ArrayList<E> extends AbstractList<E>
             this.modCount = ArrayList.this.modCount;
         }
 
+        /**
+         * 将指定索引位置的元素替换为新的元素。
+         * 
+         * @param index 要替换的元素的索引位置。
+         * @param e 要设置的新元素。
+         * @return 返回之前在该位置的旧元素。
+         * @throws IndexOutOfBoundsException 如果索引超出范围。
+         * @throws ConcurrentModificationException 如果在迭代过程中列表被修改。
+         */
         public E set(int index, E e) {
+            // 检查索引是否在有效范围内
             rangeCheck(index);
+            // 检查列表是否在迭代过程中被修改
             checkForComodification();
+            // 获取当前索引位置的旧元素
             E oldValue = ArrayList.this.elementData(offset + index);
+            // 将新元素设置到指定索引位置
             ArrayList.this.elementData[offset + index] = e;
+            // 返回旧元素
             return oldValue;
-            
         }
 
         public E get(int index) {
+            // 检查
             rangeCheck(index);
             checkForComodification();
+            // 获取当前索引位置的元素
             return ArrayList.this.elementData(offset + index);
         }
 
@@ -1355,6 +1391,14 @@ public class ArrayList<E> extends AbstractList<E>
             return true;
         }
 
+        /**
+         * 返回此集合的迭代器，行为与 {@code listIterator()} 相同。
+         * <p>
+         * 这个方法允许迭代器以任意顺序遍历集合中的元素。
+         *
+         * @return 一个迭代器，用于遍历集合中的元素
+         * @see #listIterator()
+         */
         public Iterator<E> iterator() {
             return listIterator();
         }
@@ -1365,15 +1409,25 @@ public class ArrayList<E> extends AbstractList<E>
             final int offset = this.offset;
 
             return new ListIterator<E>() {
+                // 当前迭代器所遍历的索引位置
                 int cursor = index;
                 
+                // 上一个元素的索引位置
                 int lastRet = -1;
+
+                // 期望的修改次数
                 int expectedModCount = ArrayList.this.modCount;
 
+                /**
+                 * 是否有下一个元素
+                 */
                 public boolean hasNext() {
                     return cursor != SubList.this.size;
                 }
 
+                /**
+                 * 获取下一个元素
+                 */
                 @SuppressWarnings("unchecked")
                 public E next() {
                     checkForComodification();
@@ -1387,10 +1441,16 @@ public class ArrayList<E> extends AbstractList<E>
                     return (E) elementData[offset + (lastRet = i)];
                 }
 
+                /**
+                 * 是否有前一个元素
+                 */
                 public boolean hasPrevious() {
                     return cursor != 0;
                 }
 
+                /**
+                 * 获取前一个元素
+                 */
                 @SuppressWarnings("unchecked")
                 public E previous() {
                     checkForComodification();
@@ -1404,6 +1464,9 @@ public class ArrayList<E> extends AbstractList<E>
                     return (E) elementData[offset + (lastRet = i)];
                 }
 
+                /**
+                 * 对剩余的元素执行给定的操作
+                 */
                 @SuppressWarnings("unchecked")
                 public void forEachRemaining(Consumer<? super E> consumer) {
                     Objects.requireNonNull(consumer);
@@ -1514,30 +1577,51 @@ public class ArrayList<E> extends AbstractList<E>
         }
     }
 
+    
+    /**
+     * 遍历集合中的每个元素，并对每个元素执行给定的消费操作。
+     * 
+     * @param action 消费每个元素的Consumer接口实例，不能为空。
+     *               Consumer是一个无返回值的函数式接口，可以接受一个参数并对其进行操作。
+     *               
+     * @throws NullPointerException 如果提供的action为null，则抛出NullPointerException。
+     * @throws ConcurrentModificationException 如果在遍历过程中集合被修改了（即modCount不等于expectedModCount），
+     *                                         则抛出ConcurrentModificationException。
+     */
     @Override
     public void forEach(Consumer<? super E> action) {
+        // 确保action不为null
         Objects.requireNonNull(action);
+        
+         // 记录当前的修改次数，用于后续检查集合是否被修改
         final int expectedModCount = modCount;
+        
+        // 将elementData强制转换为E类型的数组，以便于操作
         @SuppressWarnings("unchecked")
         final E[] elementData = (E[]) this.elementData;
+        
+         // 记录集合当前的大小
         final int size = this.size;
+        // 遍历集合，当集合未被修改且还未遍历完所有元素时，执行action.accept()操作
         for (int i=0; modCount == expectedModCount && i < size; i++) {
             action.accept(elementData[i]);
         }
+        
+        // 检查集合是否在遍历过程中被修改，如果是，则抛出异常
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
         }
     }
 
     /**
-     * Creates a <em><a href="Spliterator.html#binding">late-binding</a></em>
-     * and <em>fail-fast</em> {@link Spliterator} over the elements in this
-     * list.
+     * Creates a <a href="Spliterator.html#binding">late-binding</a> and fail-fast {@link Spliterator} over the elements in this list.
+     * 创建一个延迟绑定和快速失败的Spliterator，用于遍历集合中的元素。
      *
-     * The {@code Spliterator} reports {@link Spliterator#SIZED},
-     * {@link Spliterator#SUBSIZED}, and {@link Spliterator#ORDERED}.
-     * Overriding implementations should document the reporting of additional
-     * characteristic values.
+     * The {@code Spliterator} reports {@link Spliterator#SIZED}, {@link Spliterator#SUBSIZED}, and {@link Spliterator#ORDERED}.
+     * 这个Spliterator报告了SIZED、SUBSIZED和ORDERED。
+     * 
+     * Overriding implementations should document the reporting of additional characteristic values.
+     * 覆盖实现应该说明其他附加特性值的报告。
      *
      * @return a {@code Spliterator} over the elements in this list
      * @since 1.8
@@ -1547,24 +1631,38 @@ public class ArrayList<E> extends AbstractList<E>
         return new ArrayListSpliterator<>(this, 0, -1, 0);
     }
 
-    /** Index-based split-by-two, lazily initialized Spliterator */
+    /** 
+     * Index-based split-by-two, lazily initialized Spliterator 
+     * ArrayList可分割的迭代器，基于索引的一分为二，延迟初始化的Spliterator
+     * 
+     */
     static final class ArrayListSpliterator<E> implements Spliterator<E> {
 
-        /*
-         * If ArrayLists were immutable, or structurally immutable (no
-         * adds, removes, etc), we could implement their spliterators
-         * with Arrays.spliterator. Instead we detect as much
-         * interference during traversal as practical without
-         * sacrificing much performance. We rely primarily on
-         * modCounts. These are not guaranteed to detect concurrency
-         * violations, and are sometimes overly conservative about
-         * within-thread interference, but detect enough problems to
-         * be worthwhile in practice. To carry this out, we (1) lazily
+        /**
+         * If ArrayLists were immutable, or structurally immutable (no adds, removes, etc), 
+         * 如果ArrayList是只读的，或者结构上只读（没有添加、删除等操作），
+         * we could implement their spliterators with Arrays.spliterator.
+         * 我们可以使用Arrays.spliterator来实现它们的Spliterator。
+         * 
+         * Instead we detect as much interference during traversal as practical without sacrificing much performance.
+         * 相反，我们在遍历过程中尽可能检测到并发冲突，同时不会损失太多性能。
+         * 
+         * We rely primarily on modCounts.
+         * 我们主要依赖于modCounts。
+         * 
+         * These are not guaranteed to detect concurrency violations, and are sometimes overly conservative about within-thread interference, but detect enough problems to be worthwhile in practice. 
+         * 这些工具或技术并不能保证检测到所有的并发违规，有时在处理线程内部干扰时过于保守，但它们能够检测到足够多的问题，在实践中是有价值的。
+         * 
+         * To carry this out, 
+         * 为了实现这一点
+         * 
+         * (1) we lazily
          * initialize fence and expectedModCount until the latest
          * point that we need to commit to the state we are checking
          * against; thus improving precision.  (This doesn't apply to
          * SubLists, that create spliterators with current non-lazy
-         * values).  (2) We perform only a single
+         * values). 
+         *  (2) We perform only a single
          * ConcurrentModificationException check at the end of forEach
          * (the most performance-sensitive method). When using forEach
          * (as opposed to iterators), we can normally only detect
