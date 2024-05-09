@@ -1656,28 +1656,29 @@ public class ArrayList<E> extends AbstractList<E>
          * To carry this out, 
          * 为了实现这一点
          * 
-         * (1) we lazily
-         * initialize fence and expectedModCount until the latest
-         * point that we need to commit to the state we are checking
-         * against; thus improving precision.  (This doesn't apply to
-         * SubLists, that create spliterators with current non-lazy
-         * values). 
-         *  (2) We perform only a single
-         * ConcurrentModificationException check at the end of forEach
-         * (the most performance-sensitive method). When using forEach
-         * (as opposed to iterators), we can normally only detect
-         * interference after actions, not before. Further
-         * CME-triggering checks apply to all other possible
-         * violations of assumptions for example null or too-small
-         * elementData array given its size(), that could only have
-         * occurred due to interference.  This allows the inner loop
-         * of forEach to run without any further checks, and
-         * simplifies lambda-resolution. While this does entail a
-         * number of checks, note that in the common case of
-         * list.stream().forEach(a), no checks or other computation
-         * occur anywhere other than inside forEach itself.  The other
-         * less-often-used methods cannot take advantage of most of
-         * these streamlinings.
+         * (1) we lazily initialize fence and expectedModCount until the latest point that we need to commit to the state we are checking against; thus improving precision.  
+         * 我们懒加载fence和expectedModCount，直到我们检查到需要提交到我们正在检查的状态的最晚点为止，以提高精度。
+         * (This doesn't apply to SubLists, that create spliterators with current non-lazy values). 
+         * 这个不适用于SubLists，它们使用当前非懒惰的值创建spliterators。
+         *  
+         * (2) We perform only a single ConcurrentModificationException check at the end of forEach (the most performance-sensitive method).
+         * 我们只在forEach（性能敏感方法）的最后一个forEach（最性能sensitive方法）结束的时候进行一次并发修改异常检查。
+         * 
+         * When using forEach (as opposed to iterators), we can normally only detect interference after actions, not before.
+         * 当使用forEach（而不是迭代器），我们通常只能在执行操作之后检测到并发冲突，而不是在之前。
+         * 
+         * Further CME-triggering checks apply to all other possible violations of assumptions for example null or too-small elementData array given its size(), that could only have occurred due to interference.
+         * 进一步的CME触发检查适用于所有其他可能违反假设的违反，例如给定size()的null或太小的elementData数组，这些违反只能由并发冲突导致。
+         * 
+         * This allows the inner loop of forEach to run without any further checks, and simplifies lambda-resolution.
+         * 这允许forEach的内部循环无需任何进一步的检查，简化lambda解析。
+         * 
+         * While this does entail a number of checks, note that in the common case of list.stream().forEach(a), no checks or other computation
+         * occur anywhere other than inside forEach itself. 
+         * 虽然这确实需要执行一些检查，但请注意，在大多数情况下，在list.stream().forEach(a)中，除了forEach本身之外，其他任何地方都不会发生其他计算。
+         * 
+         * The other less-often-used methods cannot take advantage of most of these streamlinings.
+         * 其他更少使用的方法不能利用这些流 lineding中的大多数检查。
          */
 
         private final ArrayList<E> list;
