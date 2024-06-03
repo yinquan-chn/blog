@@ -1273,6 +1273,9 @@ public class ArrayList<E> extends AbstractList<E>
         return new SubList(this, 0, fromIndex, toIndex);
     }
 
+    /**
+     * 检查索引范围是否合法。
+     */
     static void subListRangeCheck(int fromIndex, int toIndex, int size) {
         
         if (fromIndex < 0)
@@ -1281,8 +1284,7 @@ public class ArrayList<E> extends AbstractList<E>
             throw new IndexOutOfBoundsException("toIndex = " + toIndex);
             
         if (fromIndex > toIndex)
-            throw new IllegalArgumentException("fromIndex(" + fromIndex +
-                                               ") > toIndex(" + toIndex + ")");
+            throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
     }
 
 
@@ -1682,26 +1684,40 @@ public class ArrayList<E> extends AbstractList<E>
          */
 
         private final ArrayList<E> list;
-        private int index; // current index, modified on advance/split
-        private int fence; // -1 until used; then one past last index
-        private int expectedModCount; // initialized when fence set
+        private int index; // current index, modified on advance/split，当前索引，在advance/split时修改
+        private int fence; // -1 until used; then one past last index，-1直到使用；然后是最后一个索引
+        private int expectedModCount; // initialized when fence set，初始化时设置
 
-        /** Create new spliterator covering the given  range */
+        /** 
+         * Create new spliterator covering the given  range 
+         * 创建一个新的spliterator覆盖给定的范围
+         */
         ArrayListSpliterator(ArrayList<E> list, int origin, int fence,
                              int expectedModCount) {
-            this.list = list; // OK if null unless traversed
-            this.index = origin;
-            this.fence = fence;
-            this.expectedModCount = expectedModCount;
+            this.list = list; // OK if null unless traversed,初始化列表引用
+            this.index = origin; // 设置起始索引
+            this.fence = fence; // 设置终止索引
+            this.expectedModCount = expectedModCount; // 设置期望的修改次数
         }
 
-        private int getFence() { // initialize fence to size on first use
-            int hi; // (a specialized variant appears in method forEach)
+        /**
+         * 获取围栏的大小。该方法用于在首次使用时初始化围栏的大小。
+         * 围栏是一个用于内部管理的变量，可能代表了集合的边界或其他意义。
+         * 该方法没有参数。
+         *
+         * @return 返回围栏的大小。如果集合尚未初始化，返回0。
+         */
+        private int getFence() { // initialize fence to size on first use，首次使用时将围栏初始化为大小
+            int hi; // (a specialized variant appears in method forEach) 方法forEach中特殊变体
             ArrayList<E> lst;
+            // 当fence小于0时，表示尚未初始化，进行初始化操作
             if ((hi = fence) < 0) {
+                // 如果list也为null，说明集合尚未被赋值，将fence设置为0
                 if ((lst = list) == null)
                     hi = fence = 0;
                 else {
+                    // 如果list不为null，从list中获取当前的modCount并将其赋值给expectedModCount，
+                    // 同时将list的大小赋值给fence
                     expectedModCount = lst.modCount;
                     hi = fence = lst.size;
                 }
@@ -1709,71 +1725,137 @@ public class ArrayList<E> extends AbstractList<E>
             return hi;
         }
 
+        /**
+         * 尝试将当前分割区段拆分为两个相等或近似的子区段。如果当前区段足够大，则返回其中一个子区段，
+         * 并更新当前区段的起始索引。如果区段太小，则不进行拆分并返回null。
+         * 
+         * @return 返回一个新的 ArrayListSpliterator 实例，代表拆分后的子区段；如果无法拆分，则返回null。
+         */
         public ArrayListSpliterator<E> trySplit() {
+            // 计算当前区段的中间位置
             int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
-            return (lo >= mid) ? null : // divide range in half unless too small
+            // 如果当前区段的起始索引大于或等于中间位置，则表示区段太小，不进行拆分
+            return (lo >= mid) ? null : // 区段太小，无法拆分
                 new ArrayListSpliterator<E>(list, lo, index = mid,
-                                            expectedModCount);
+                                            expectedModCount); // 创建并返回新的 ArrayListSpliterator 实例代表拆分后的子区段
         }
 
+        /**
+         * 尝试将迭代器向前移动一位，并执行提供的消费行动。
+         * 如果迭代器还可以继续向前移动，则执行给定的Consumer操作，消费当前元素，并返回true。
+         * 如果迭代器已经到达末尾，则不执行操作并返回false。
+         * 
+         * @param action 消费当前元素的Consumer函数，不可为null。
+         * @return 如果成功消费了一个元素则返回true，否则返回false。
+         * @throws NullPointerException 如果提供的action为null。
+         * @throws ConcurrentModificationException 如果在迭代过程中列表被并发修改。
+         */
         public boolean tryAdvance(Consumer<? super E> action) {
+            // 检查action是否为null
             if (action == null)
                 throw new NullPointerException();
             int hi = getFence(), i = index;
+            // 如果当前索引小于可用元素的上限，尝试消费下一个元素
             if (i < hi) {
-                index = i + 1;
-                @SuppressWarnings("unchecked") E e = (E)list.elementData[i];
-                action.accept(e);
+                index = i + 1; // 将索引向前移动一位
+                @SuppressWarnings("unchecked") E e = (E)list.elementData[i]; // 转型并获取当前元素
+                action.accept(e); // 执行提供的消费行动
+                // 检查列表是否在迭代过程中被修改
                 if (list.modCount != expectedModCount)
                     throw new ConcurrentModificationException();
-                return true;
+                return true; // 成功消费了一个元素，返回true
             }
-            return false;
+            return false; // 迭代器已到达末尾，返回false
         }
 
+        /**
+         * 遍历列表中剩余的元素，并对每个元素执行给定的消费操作。
+         * 注意：如果在遍历过程中列表被修改，将抛出ConcurrentModificationException。
+         * 
+         * @param action 消费每个元素的Consumer接口实例，不能为空。
+         * @throws NullPointerException 如果action为null。
+         * @throws ConcurrentModificationException 如果在遍历过程中列表被修改。
+         */
         public void forEachRemaining(Consumer<? super E> action) {
-            int i, hi, mc; // hoist accesses and checks from loop
+            // 提升访问和检查的效率，初始化变量
+            int i, hi, mc; 
             ArrayList<E> lst; Object[] a;
+            
+            // 检查action是否为null
             if (action == null)
                 throw new NullPointerException();
+            
+            // 验证列表和其元素数据是否非空
             if ((lst = list) != null && (a = lst.elementData) != null) {
+                // 如果fence小于0，获取列表的大小和修改次数
                 if ((hi = fence) < 0) {
                     mc = lst.modCount;
                     hi = lst.size;
                 }
                 else
-                    mc = expectedModCount;
+                    mc = expectedModCount; // 使用预期的修改次数
+                
+                // 检查索引是否有效，并遍历列表中的元素
                 if ((i = index) >= 0 && (index = hi) <= a.length) {
                     for (; i < hi; ++i) {
+                        // 转换并消费每个元素
                         @SuppressWarnings("unchecked") E e = (E) a[i];
                         action.accept(e);
                     }
+                    
+                    // 检查列表的修改次数是否与预期一致
                     if (lst.modCount == mc)
-                        return;
+                        return; // 一致则结束方法
                 }
             }
+            
+            // 如果列表被修改，抛出异常
             throw new ConcurrentModificationException();
         }
 
+        /**
+         * 估算当前索引与栅栏之间的距离。
+         * 该方法不接受参数。
+         *
+         * @return 返回一个长整型（long）值，表示当前索引与栅栏之间的距离。这个值是通过栅栏位置减去当前索引得到的。
+         */
         public long estimateSize() {
+            // 计算当前索引与栅栏之间的距离，并转换为长整型返回
             return (long) (getFence() - index);
         }
 
+        /**
+         * 返回描述此Spliterator特征的标志位。
+         * 
+         * @return 一个整数，包含ORDERED、SIZED和SUBSIZED三个特征标志位。
+         *         ORDERED表示此Spliterator是有序的，SIZED表示它知道自己的大小，
+         *         SUBSIZED表示它可以报告其子 Spliterator 的大小。
+         */
         public int characteristics() {
+            // 返回有序、有大小且可分割的Spliterator特征
             return Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED;
         }
     }
 
+    /**
+     * 根据提供的谓词删除集合中符合条件的所有元素。此方法执行后，集合将不再包含满足谓词条件的任何元素。
+     *
+     * @param filter 用于测试元素是否应被移除的谓词。不得为null。
+     * @return 如果有元素被移除则返回true，否则返回false。
+     * @throws NullPointerException 如果指定的谓词为null，将抛出此异常。
+     */
     @Override
     public boolean removeIf(Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
-        // figure out which elements are to be removed
-        // any exception thrown from the filter predicate at this stage
-        // will leave the collection unmodified
+        
+        // 确定哪些元素需要被移除
+        // 此阶段来自过滤谓词的任何异常都将保持集合不变
         int removeCount = 0;
         final BitSet removeSet = new BitSet(size);
         final int expectedModCount = modCount;
         final int size = this.size;
+        
+        // 遍历并标记需移除的元素
         for (int i=0; modCount == expectedModCount && i < size; i++) {
             @SuppressWarnings("unchecked")
             final E element = (E) elementData[i];
@@ -1782,54 +1864,95 @@ public class ArrayList<E> extends AbstractList<E>
                 removeCount++;
             }
         }
+        
+        // 检查并发修改
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
         }
-
-        // shift surviving elements left over the spaces left by removed elements
+        
+        // 移除标记的元素并紧凑集合
         final boolean anyToRemove = removeCount > 0;
         if (anyToRemove) {
             final int newSize = size - removeCount;
+            
+            // 将保留的元素左移以覆盖被移除元素的空间
             for (int i=0, j=0; (i < size) && (j < newSize); i++, j++) {
                 i = removeSet.nextClearBit(i);
                 elementData[j] = elementData[i];
             }
+            
+            // 清理原集合末尾的引用，以便垃圾回收
             for (int k=newSize; k < size; k++) {
-                elementData[k] = null;  // Let gc do its work
+                elementData[k] = null;
             }
+            
+            // 更新集合大小和修改计数
             this.size = newSize;
             if (modCount != expectedModCount) {
                 throw new ConcurrentModificationException();
             }
             modCount++;
         }
-
+        
+        // 返回是否有元素被移除的结果
         return anyToRemove;
     }
 
+    /**
+     * 使用给定的单个操作符替换集合中的所有元素。
+     * 
+     * @param operator 一个一元操作符，用于替换集合中的每个元素。该操作符不能为空。
+     * 
+     * 注意：此方法会遍历集合中的所有元素，并应用提供的操作符进行替换。如果在遍历过程中集合被修改，
+     * 则会抛出 {@link ConcurrentModificationException}。
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void replaceAll(UnaryOperator<E> operator) {
+        // 确保操作符不为空
         Objects.requireNonNull(operator);
+        
+        // 初始化期望的修改次数，用于检测在遍历过程中集合是否被修改
         final int expectedModCount = modCount;
+        // 获取当前集合的大小
         final int size = this.size;
+        
+        // 遍历集合，应用操作符到每个元素
         for (int i=0; modCount == expectedModCount && i < size; i++) {
             elementData[i] = operator.apply((E) elementData[i]);
         }
+        
+        // 如果在遍历过程中集合被修改，则抛出异常
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
         }
+        
+        // 更新修改次数
         modCount++;
     }
 
+    /**
+     * 对集合元素进行排序。
+     * 使用提供的比较器对集合中的元素进行排序。此方法会改变集合的原始顺序。
+     * 
+     * @param c 用于排序的比较器。如果为 null，则使用元素的自然顺序进行排序。
+     * @throws ConcurrentModificationException 如果在排序过程中集合被其他线程修改。
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void sort(Comparator<? super E> c) {
+        // 在排序开始前记录当前的修改次数，用于后续检查是否有并发修改
         final int expectedModCount = modCount;
+        
+        // 使用提供的比较器对元素数据进行排序
         Arrays.sort((E[]) elementData, 0, size, c);
+        
+        // 检查集合是否在排序过程中被修改
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
         }
+        
+        // 更新修改次数，表示已完成一次排序操作
         modCount++;
     }
 }
