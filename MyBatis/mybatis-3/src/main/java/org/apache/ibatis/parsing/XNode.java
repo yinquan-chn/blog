@@ -252,31 +252,56 @@ public class XNode {
     return value == null ? def : Float.valueOf(value);
   }
 
+  /**
+   * 获取当前节点的所有子节点，并将它们转换为XNode对象的列表。
+   *
+   * @return 包含当前节点所有子元素节点的XNode列表。
+   */
   public List<XNode> getChildren() {
+    // 初始化一个空的列表，用于存储子节点
     List<XNode> children = new ArrayList<>();
+    // 获取当前节点的所有子节点
     NodeList nodeList = node.getChildNodes();
+    // 如果子节点列表不为空
     if (nodeList != null) {
+      // 遍历所有子节点
       for (int i = 0, n = nodeList.getLength(); i < n; i++) {
         Node node = nodeList.item(i);
+        // 如果当前节点是元素节点，则转换为XNode并添加到列表中
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           children.add(new XNode(xpathParser, node, variables));
         }
       }
     }
+    // 返回包含所有子元素节点的XNode列表
     return children;
   }
 
+
+  /**
+   * 将当前节点的所有子节点转换为Properties对象。
+   * 子节点需要具有"name"和"value"属性，这两个属性将被用于构造Properties对象中的键值对。
+   *
+   * @return Properties对象，包含从子节点中提取的键值对。
+   */
   public Properties getChildrenAsProperties() {
+    // 初始化一个Properties对象，用于存储子节点的键值对。
     Properties properties = new Properties();
+    // 遍历所有子节点。
     for (XNode child : getChildren()) {
+      // 获取子节点的"name"属性作为键。
       String name = child.getStringAttribute("name");
+      // 获取子节点的"value"属性作为值。
       String value = child.getStringAttribute("value");
+      // 如果键和值都不为空，则将它们添加到Properties对象中。
       if (name != null && value != null) {
         properties.setProperty(name, value);
       }
     }
+    // 返回包含所有子节点键值对的Properties对象。
     return properties;
   }
+
 
   @Override
   public String toString() {

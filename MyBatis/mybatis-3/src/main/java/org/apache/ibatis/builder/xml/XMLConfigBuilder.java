@@ -116,6 +116,11 @@ public class XMLConfigBuilder extends BaseBuilder {
     return configuration;
   }
 
+  /**
+   * 解析配置文件的主体方法，负责处理XML配置的各个部分。
+   *
+   * @param root 配置文件的根节点，从中逐个解析各个子节点。
+   */
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
@@ -146,11 +151,20 @@ public class XMLConfigBuilder extends BaseBuilder {
       // 加载reflectorFactory配置
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
 
+      // settings配置的信息加载到Configuration中
       settingsElement(settings);
+
       // read it after objectFactory and objectWrapperFactory issue #631
+      // 解析environments配置
       environmentsElement(root.evalNode("environments"));
+
+      // 解析databaseIdProvider配置
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+
+      // 解析typeHandlers配置
       typeHandlersElement(root.evalNode("typeHandlers"));
+
+      // 解析mapper配置
       mappersElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -257,27 +271,51 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 处理属性元素配置。
+   * 该方法用于解析XML配置中特定的properties元素，通过指定的资源路径或URL加载属性文件，并将这些属性设置为配置的默认值。
+   * 如果同时指定了资源(resource)和URL(url)，则会抛出异常，因为两者不能同时使用。
+   * 此外，方法还会将配置中定义的变量合并到默认属性中，最后更新配置和解析器的变量设置。
+   * 注:从resource，或者url读取到的属性和属性值会覆盖掉<properties>子节点中同名的属性和及值
+   * 用以参考的properties配置：
+   * <properties resource="org/mybatis/example/config.properties">
+   *   <property name="username" value="dev_user"/>
+   *   <property name="password" value="F2Fa3!33TYyg"/>
+   * </properties>
+   * @param context XML节点，表示properties元素，从中读取配置信息。
+   * @throws Exception 如果同时指定了资源和URL，则抛出构建器异常。
+   */
   private void propertiesElement(XNode context) throws Exception {
+    // 如果上下文为空，则直接返回，不进行任何处理
     if (context == null) {
       return;
     }
+    // 从properties中加载子元素作为属性，这些属性将作为默认值
     Properties defaults = context.getChildrenAsProperties();
+    // 从properties中获取resource属性和url属性的值
     String resource = context.getStringAttribute("resource");
     String url = context.getStringAttribute("url");
+    // 如果同时指定了resource和url，则抛出异常，因为两者不能同时使用
     if (resource != null && url != null) {
       throw new BuilderException(
           "The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
     }
+    // 如果指定了resource，则加载资源文件作为属性，并合并到默认属性中
     if (resource != null) {
       defaults.putAll(Resources.getResourceAsProperties(resource));
-    } else if (url != null) {
+    }
+    // 如果指定了url，则加载URL指向的属性文件，并合并到默认属性中
+    else if (url != null) {
       defaults.putAll(Resources.getUrlAsProperties(url));
     }
+    // 获取配置中定义的变量，如果存在，则合并到默认属性中
     Properties vars = configuration.getVariables();
     if (vars != null) {
       defaults.putAll(vars);
     }
+    // 更新解析器的变量设置
     parser.setVariables(defaults);
+    // 更新配置的变量设置
     configuration.setVariables(defaults);
   }
 

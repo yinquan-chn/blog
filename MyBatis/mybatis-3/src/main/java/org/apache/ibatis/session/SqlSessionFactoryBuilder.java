@@ -97,8 +97,14 @@ public class SqlSessionFactoryBuilder {
     }
   }
 
+  /**
+   * 根据给定的配置构建SqlSessionFactory。
+   *
+   * @param config 配置对象，包含了MyBatis的全局配置信息。
+   * @return 返回一个DefaultSqlSessionFactory实例，该实例可用于创建SqlSession，进而执行SQL操作。
+   */
   public SqlSessionFactory build(Configuration config) {
-    return new DefaultSqlSessionFactory(config);
+      return new DefaultSqlSessionFactory(config);
   }
 
 }
