@@ -34,12 +34,20 @@ public class MetaClass {
   private final ReflectorFactory reflectorFactory;
   private final Reflector reflector;
 
+  /**
+   * 私有的构造方法，不允许外部创建
+   *
+   * @param type
+   * @param reflectorFactory
+   */
   private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
     this.reflectorFactory = reflectorFactory;
+    // 根据类型创建 Reflector
     this.reflector = reflectorFactory.findForClass(type);
   }
 
   public static MetaClass forClass(Class<?> type, ReflectorFactory reflectorFactory) {
+    // 调用构造方法
     return new MetaClass(type, reflectorFactory);
   }
 
@@ -132,15 +140,29 @@ public class MetaClass {
     return null;
   }
 
+  /**
+   * 检查给定名称的属性是否有对应的setter方法。
+   *
+   * @param name 属性的名称，可以是复合属性名。
+   * @return 如果属性有setter方法，则返回true；否则返回false。
+   */
   public boolean hasSetter(String name) {
+    // 使用PropertyTokenizer解析属性名，以处理可能的复合属性。
     PropertyTokenizer prop = new PropertyTokenizer(name);
+
+    // 如果属性名不是复合属性，直接检查是否有对应的setter方法。
     if (!prop.hasNext()) {
+      // 调用reflector的hasSetter方法检查是否有setter。
       return reflector.hasSetter(prop.getName());
     }
+    // 如果属性名是复合属性，先检查最外层属性是否有setter方法。
     if (reflector.hasSetter(prop.getName())) {
+      // 获取外层属性的MetaClass，用于进一步检查复合属性的setter。
       MetaClass metaProp = metaClassForProperty(prop.getName());
+      // 使用MetaClass检查复合属性是否有setter。
       return metaProp.hasSetter(prop.getChildren());
     }
+    // 如果以上条件都不满足，则说明没有setter方法。
     return false;
   }
 

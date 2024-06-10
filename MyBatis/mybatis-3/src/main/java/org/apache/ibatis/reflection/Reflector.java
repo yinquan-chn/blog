@@ -48,6 +48,7 @@ import org.apache.ibatis.util.MapUtil;
 /**
  * This class represents a cached set of class definition information that allows for easy mapping between property
  * names and getter/setter methods.
+ * 反射器，用于解析和存储目标类中的元信息
  *
  * @author Clinton Begin
  */

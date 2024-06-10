@@ -171,21 +171,46 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 将XNode对象中的配置信息转换为Properties对象。
+   * 解析MyBatis配置中的settings配置，并将其转换为Properties对象。
+   * 1. 解析 settings 子节点的内容，并将解析结果转成 Properties 对象
+   * 2. 为 Configuration 创建元信息对象
+   * 3. 通过 MetaClass 检测 Configuration 中是否存在某个属性的 setter 方法，
+   * 不存在则抛异常
+   * 4. 若通过 MetaClass 的检测，则返回 Properties 对象，方法逻辑结束
+   * <settings>
+   *     <setting name="cacheEnabled" value="true"/>
+   *     <setting name="lazyLoadingEnabled" value="true"/>
+   *     <setting name="autoMappingBehavior" value="PARTIAL"/>
+   * </settings>
+   *
+   * @param context 包含配置信息的XNode对象。若为null，则返回一个空的Properties对象。
+   * @return 包含配置信息的Properties对象。如果context为null，则返回一个空的Properties对象。
+   * @throws BuilderException 如果有任何配置项未被配置类识别，将抛出此异常。
+   */
   private Properties settingsAsProperties(XNode context) {
+    // 若context为null，直接返回一个空的Properties对象
     if (context == null) {
       return new Properties();
     }
+    // 从settings子节点中获取配置信息，并以Properties对象形式返回
     Properties props = context.getChildrenAsProperties();
-    // Check that all settings are known to the configuration class
+
+    // 创建 Configuration 类的"元信息"对象
     MetaClass metaConfig = MetaClass.forClass(Configuration.class, localReflectorFactory);
+    // 遍历Properties对象中的所有键，验证这些配置项是否全都有
     for (Object key : props.keySet()) {
+      //  检测 Configuration 中是否存在相关属性，不存在则抛出异常
       if (!metaConfig.hasSetter(String.valueOf(key))) {
         throw new BuilderException(
-            "The setting " + key + " is not known.  Make sure you spelled it correctly (case sensitive).");
+            "未知的配置项 " + key + "。请确认拼写无误（区分大小写）。");
       }
     }
+    // 返回处理后的Properties对象
     return props;
   }
+
 
   private void loadCustomVfsImpl(Properties props) throws ClassNotFoundException {
     String value = props.getProperty("vfsImpl");
