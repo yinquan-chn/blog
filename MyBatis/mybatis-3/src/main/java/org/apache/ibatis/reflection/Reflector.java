@@ -48,7 +48,9 @@ import org.apache.ibatis.util.MapUtil;
 /**
  * This class represents a cached set of class definition information that allows for easy mapping between property
  * names and getter/setter methods.
- * 反射器，用于解析和存储目标类中的元信息
+ * 反射器，用于解析和存储目标类中的元信息：
+ * Reflector 这个类的用途主要是是通过反射获取目标类的 getter 方法及其返回值类型，setter 方法及其参数值类型等元信息。
+ * 并将获取到的元信息缓存到相应的集合中，供后续使用
  *
  * @author Clinton Begin
  */
@@ -56,29 +58,67 @@ public class Reflector {
 
   private static final MethodHandle isRecordMethodHandle = getIsRecordMethodHandle();
   private final Class<?> type;
+  /**
+   * 可读属性名称数组，用于保存 getter 方法对应的属性名称
+   */
   private final String[] readablePropertyNames;
+  /**
+   * 可写属性名称数组，用于保存 setter 方法对应的属性名称
+   */
   private final String[] writablePropertyNames;
+  /**
+   * 用于保存属性名称到 Invoke 的映射。setter 方法会被封装到 MethodInvoker 对象中
+   */
   private final Map<String, Invoker> setMethods = new HashMap<>();
+  /**
+   * 用于保存属性名称到 Invoke 的映射。同上，getter 方法也会被封装到 MethodInvoker 对象中
+   */
   private final Map<String, Invoker> getMethods = new HashMap<>();
+  /**
+   * 用于保存 setter 对应的属性名与参数类型的映射
+   */
   private final Map<String, Class<?>> setTypes = new HashMap<>();
+  /**
+   * 用于保存 getter 对应的属性名与返回值类型的映射
+   */
   private final Map<String, Class<?>> getTypes = new HashMap<>();
   private Constructor<?> defaultConstructor;
 
+  /**
+   * 用于保存大写属性名与属性名之间的映射，比如 <NAME, name>
+   */
   private final Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
+  /**
+   * Reflector类的构造函数。
+   * 根据给定的类，初始化反射器，包括收集和处理类的构造函数、方法和字段。
+   * 对于记录类，只处理获取方法；对于普通类，处理获取、设置方法和字段。
+   * 建立属性名的大小写不敏感映射，以便后续操作可以忽略属性名的大小写。
+   *
+   * @param clazz 要反射的类
+   */
   public Reflector(Class<?> clazz) {
     type = clazz;
+    // 添加默认构造函数
     addDefaultConstructor(clazz);
     Method[] classMethods = getClassMethods(clazz);
+    // 根据类型是否为记录类，选择性地添加获取方法
     if (isRecord(type)) {
       addRecordGetMethods(classMethods);
     } else {
+      // 解析 getter 方法，并将解析结果放入 getMethods 中
       addGetMethods(classMethods);
+      // 解析 setter 方法，并将解析结果放入 setMethods 中
       addSetMethods(classMethods);
+      // 解析属性字段，并将解析结果添加到 setMethods 或 getMethods 中
       addFields(clazz);
     }
+    // 从 getMethods 映射中获取可读属性名数组
     readablePropertyNames = getMethods.keySet().toArray(new String[0]);
+    // 从 setMethods 映射中获取可写属性名数组
     writablePropertyNames = setMethods.keySet().toArray(new String[0]);
+    // 将所有属性名的大写形式作为键，属性名作为值，
+    // 存入到 caseInsensitivePropertyMap 中
     for (String propName : readablePropertyNames) {
       caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
     }
@@ -98,12 +138,30 @@ public class Reflector {
         .ifPresent(constructor -> this.defaultConstructor = constructor);
   }
 
+  /**
+   * 添加getter方法并解决可能的命名冲突。
+   * 通过分析方法名和参数，识别出所有无参数的getter方法，并将它们映射到对应的属性名。
+   * 如果存在同名的getter方法（即属性名冲突），则记录这些冲突并随后解决它们。
+   *
+   * @param methods 类中定义的所有方法。
+   */
   private void addGetMethods(Method[] methods) {
+    // 使用HashMap来存储可能冲突的getter方法，键为属性名，值为该属性名对应的getter方法列表。
     Map<String, List<Method>> conflictingGetters = new HashMap<>();
-    Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
-        .forEach(m -> addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m));
+
+    // 流式处理methods数组，筛选出无参数且被识别为getter方法的方法。
+    Arrays.stream(methods)
+        // getter 方法不应该有参数，若存在参数，则忽略当前方法;以 get或 is开头的方法
+        .filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
+        .forEach(m -> {
+          // 将getter方法映射到对应的属性名，并处理命名冲突。
+          addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m);
+        });
+
+    // 解决getter方法的命名冲突。
     resolveGetterConflicts(conflictingGetters);
   }
+
 
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
@@ -154,9 +212,22 @@ public class Reflector {
     resolveSetterConflicts(conflictingSetters);
   }
 
+  /**
+   * 添加方法冲突到映射中。
+   * 如果属性名有效，则将方法添加到相应属性名的方法列表中。如果属性名对应的列表不存在，
+   * 则先创建一个空列表，然后将方法添加到该列表中。
+   * 这个方法用于收集和组织具有相同属性名（可能引起冲突）的方法。
+   *
+   * @param conflictingMethods 存储方法冲突的映射，键为属性名，值为该属性名下冲突的方法列表。
+   * @param name 属性名，用于映射的关键字。
+   * @param method 要添加到冲突列表中的方法。
+   */
   private void addMethodConflict(Map<String, List<Method>> conflictingMethods, String name, Method method) {
+    // 检查属性名是否有效，只有有效的属性名才会被添加到映射中
     if (isValidPropertyName(name)) {
+      // 使用计算如果Absent的策略，为属性名在映射中创建一个方法列表，如果已存在则直接获取
       List<Method> list = MapUtil.computeIfAbsent(conflictingMethods, name, k -> new ArrayList<>());
+      // 将方法添加到属性名对应的方法列表中
       list.add(method);
     }
   }
