@@ -163,47 +163,79 @@ public class Reflector {
   }
 
 
+  /**
+   * 解决具有冲突的getter方法。
+   * 当存在多个同名的getter方法时，需要确定一个“胜利者”（winner），或者标记为模糊（ambiguous）。
+   * 决定胜利者的规则包括：返回类型优先级、布尔方法优先。
+   *
+   * @param conflictingGetters 包含冲突getter方法的映射，键为属性名，值为getter方法列表。
+   */
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
+    // 遍历每个属性的getter方法列表
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
       Method winner = null;
       String propName = entry.getKey();
       boolean isAmbiguous = false;
+      // 遍历每个getter方法，决定胜利者
       for (Method candidate : entry.getValue()) {
+        // 如果还没有胜利者，则当前方法自动成为胜利者
         if (winner == null) {
           winner = candidate;
           continue;
         }
         Class<?> winnerType = winner.getReturnType();
         Class<?> candidateType = candidate.getReturnType();
+        // 如果返回类型相同，且不是布尔类型，则标记为模糊并退出循环
         if (candidateType.equals(winnerType)) {
           if (!boolean.class.equals(candidateType)) {
             isAmbiguous = true;
             break;
           }
+          // 如果是布尔类型的方法，优先选择以is开头的方法作为胜利者
           if (candidate.getName().startsWith("is")) {
             winner = candidate;
           }
         } else if (candidateType.isAssignableFrom(winnerType)) {
+          // winnerType是 candidateType 的子类，类型上更为具体，则认为当前的 winner 仍是合适的，无需做什么事情
           // OK getter type is descendant
         } else if (winnerType.isAssignableFrom(candidateType)) {
+          // candidateType 是 winnerType 的子类，此时认为 candidate 方法，更为合适，故将 winner 更新为 candidate
           winner = candidate;
         } else {
+          // 如果返回类型既不是继承关系，也不是相同类型，则标记为模糊并退出循环
           isAmbiguous = true;
           break;
         }
       }
+      // 将筛选出的方法添加到 getMethods 中，并将方法返回值添加到 getTypes 中
       addGetMethod(propName, winner, isAmbiguous);
     }
   }
 
+
+  /**
+   * 添加获取方法的调用者。
+   *
+   * 此方法用于根据给定的方法和属性名，添加一个用于调用该方法的调用者对象到存储中。
+   * 如果方法是重载的并且类型不明确，将使用特殊的调用者对象来处理这种情况。
+   *
+   * @param name 属性名，对应于获取方法的名称。
+   * @param method 获取方法的Method对象。
+   * @param isAmbiguous 指示方法是否为重载且类型不明确的方法。
+   */
   private void addGetMethod(String name, Method method, boolean isAmbiguous) {
+    // 根据方法是否是重载且类型不明确的，选择合适的MethodInvoker类型。
     MethodInvoker invoker = isAmbiguous ? new AmbiguousMethodInvoker(method, MessageFormat.format(
         "Illegal overloaded getter method with ambiguous type for property ''{0}'' in class ''{1}''. This breaks the JavaBeans specification and can cause unpredictable results.",
         name, method.getDeclaringClass().getName())) : new MethodInvoker(method);
+    // 将调用者对象添加到存储中，以供后续使用。
     getMethods.put(name, invoker);
+    // 解析方法的返回类型，并将其转换为Class对象。
     Type returnType = TypeParameterResolver.resolveReturnType(method, type);
+    // 将解析后的返回类型存储起来。
     getTypes.put(name, typeToClass(returnType));
   }
+
 
   private void addSetMethods(Method[] methods) {
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
